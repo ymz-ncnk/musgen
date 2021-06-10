@@ -55,7 +55,7 @@ It's a super simple binary format.
 
   ## Samples
 
-  | Type            |     Value           |     Mus format (hex)                  |     In Parts          |
+  | Type            |     Value           |     MUS format (hex)                  |     In Parts          |
   |-----------------|---------------------|---------------------------------------|-----------------------|
   | int             | 500                 | e807                                  | <sub>e807 - value of the integer</sub> |
   | list of strings | {"hello", "world"}  | 040a68656c6c6f0a776f726c64            | <sub>04 - length of the list,<br>0a - length of the first elem,<br>68656c6c6f - value of the first elem,<br>0a - length of the second elem,<br>776f726c64 - value of the second elem.</sub> |
