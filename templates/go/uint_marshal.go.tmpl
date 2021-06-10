@@ -1,0 +1,18 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type)}}
+  {{- $vn := .VarName}}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  for {{$vn}} >= 0x80 {
+    {{- /* Will panic, before Marshal we should check SizeMUS and buf len */}}
+    {{- /* if len(buf) < i+1 {
+      err = errs.ErrSmallBuf
+      break
+    } */}}
+    buf[i] = byte({{$vn}}) | 0x80
+    {{$vn}} >>= 7
+    i++
+  }
+  buf[i] = byte({{$vn}})
+  i++
+}

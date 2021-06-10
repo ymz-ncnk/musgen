@@ -1,0 +1,37 @@
+{{- /* TypeDesc */ -}}
+package {{.Package}}
+
+func (v {{.Name}}) MarshalMUS(buf []byte) int {
+  i := 0
+  {{- $unsafe := .Unsafe }}
+  {{- range $index, $field := .Fields }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe) (print "v." $field.Name)) "marshal") }}
+  {{- end }}
+  return i
+}
+
+func (v *{{.Name}}) UnmarshalMUS(buf []byte) (int, error) {
+  i := 0
+  {{- $unsafe := .Unsafe }}
+  var err error
+  {{- range $index, $field := .Fields }}
+    {{- $fvn := (print "v." $field.Name) }}
+    {{- if (ParsePtrType $field.Type).Valid }}
+      {{- include "initptrvar.go.tmpl" (MakeVar $fvn $field.Type) }}
+    {{- end }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe) $fvn) "unmarshal") }}
+    if err != nil {
+      return i, errs.NewFieldError({{print "\"" $field.Name "\""}}, err)
+    }
+  {{- end }}
+  return i, err
+}
+
+func (v {{.Name}}) SizeMUS() int {
+  size := 0
+  {{- $unsafe := .Unsafe }}
+  {{- range $index, $field := .Fields }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe) (print "v." $field.Name)) "size") }}
+  {{- end }}
+  return size
+}

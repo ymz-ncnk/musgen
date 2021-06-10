@@ -1,0 +1,21 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type)}}
+  {{- $vn := .VarName}}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $ct := $pt.Type}}
+  {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
+  {{- $uvt := print "uint" (NumSize .Type) }}
+  var uv {{$uvt}}
+  {{ include "uint_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe) "uv") }}
+  {{- if eq (NumSize .Type) 64 }}
+    uv = (uv << 32) | (uv >> 32)
+    uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)
+    uv = ((uv << 8) & 0xFF00FF00FF00FF00) | ((uv >> 8) & 0x00FF00FF00FF00FF)
+  {{- else if eq (NumSize .Type) 32 }}
+    uv = (uv << 16) | (uv >> 16)
+    uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
+  {{- end }}
+  {{$vn}} = {{$ct}}(math.Float{{(NumSize .Type)}}frombits(uv))
+  {{- include "validator.go.tmpl" . -}}
+}

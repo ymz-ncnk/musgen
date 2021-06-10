@@ -1,0 +1,21 @@
+{{- /* TypeDesc */ -}}
+package {{.Package}}
+
+func (v {{.Name}}) MarshalMUS(buf []byte) int {
+  i := 0
+  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe) "v") "marshal") }}
+  return i
+}
+
+func (v *{{.Name}}) UnmarshalMUS(buf []byte) (int, error) {
+  i := 0
+  var err error
+  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe) "(*v)") "unmarshal") }}
+  return i, err
+}
+
+func (v {{.Name}}) SizeMUS() int {
+  size := 0
+  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe) "v") "size") }}
+  return size
+}

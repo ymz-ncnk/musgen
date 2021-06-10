@@ -1,0 +1,25 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type) }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $al := (ParseArrayType $pt.Type).Length}}
+  {{- $at := (ParseArrayType $pt.Type).Type}}
+  {{- $index := ArrayIndex .VarName}}
+  for {{$index}} := 0; {{$index}} < {{$al}}; {{$index}}++ {
+    {{- $elvn := (print $vn "[" $index "]") }}
+    {{- if (ParsePtrType $at).Valid }}
+      {{ include "initptrvar.go.tmpl" (MakeVar $elvn $at) }}
+    {{- end }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $at .ElemValidator 0 .Unsafe) $elvn) "unmarshal") }}
+    if err != nil {
+      err = errs.NewArrayError({{$index}}, err)
+      break
+    }
+  }
+  {{- if ne .Validator "" }}
+    if err == nil {
+      {{- include "validator.go.tmpl" . -}}
+    }
+  {{- end }}
+}

@@ -1,0 +1,12 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type)}}
+  {{- $vn := .VarName}}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  if {{$vn}} {
+    buf[i] = 0x01
+  } else {
+    buf[i] = 0x00
+  }
+  i++
+}

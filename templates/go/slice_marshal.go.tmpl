@@ -1,0 +1,14 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type) }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  length := len({{$vn}})
+  {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe) "length") }}
+  for _, el := range {{$vn}} {
+    {{- $unsafe := .Unsafe}}
+    {{- with (ParseSliceType $pt.Type) }}
+      {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleType .Type $unsafe) "el") "marshal") }}
+    {{- end }}
+  }
+}

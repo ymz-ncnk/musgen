@@ -1,0 +1,14 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type) }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  var sv {{$pt.Type}}
+  si := 0
+  si, err = sv.UnmarshalMUS(buf[i:])
+  if err == nil {
+    {{$vn}} = sv
+    i += si
+    {{- include "validator.go.tmpl" . -}}
+  }
+}

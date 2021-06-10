@@ -1,0 +1,38 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type) }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $st := (ParseSliceType $pt.Type).Type}}
+  {{- $index := ArrayIndex .VarName}}
+  var length int
+  {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe) "length") }}
+  if length < 0 {
+    return i, errs.ErrNegativeLength
+  }
+  {{- if ne .MaxLength 0 }}
+    if length > {{.MaxLength}} {
+      err = errs.ErrMaxLengthExceeded
+    } else {
+  {{- end }}
+    {{$vn}} = make({{ClearMapType $pt.Type}}, length)
+    for {{$index}} := 0; {{$index}} < length; {{$index}}++ {
+      {{- $elvn := (print $vn "[" $index "]") }}
+      {{- if (ParsePtrType $st).Valid }}
+        {{ include "initptrvar.go.tmpl" (MakeVar $elvn $st) }}
+      {{- end }}
+      {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $st .ElemValidator 0 .Unsafe) (print $vn "[" $index "]")) "unmarshal") }}
+      if err != nil {
+        err = errs.NewSliceError({{$index}}, err)
+        break
+      }
+    }
+    {{- if ne .Validator "" }}
+      if err == nil {
+        {{- include "validator.go.tmpl" . -}}
+      }
+    {{- end }}
+  {{- if ne .MaxLength 0 }}
+    }
+  {{- end }}
+}

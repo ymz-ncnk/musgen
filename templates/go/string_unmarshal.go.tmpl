@@ -1,0 +1,41 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type)}}
+  {{- $vn := .VarName}}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $ct := $pt.Type}}
+  {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
+  var length int
+  {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe) "length") }}
+  if length < 0 {
+    return i, errs.ErrNegativeLength
+  } 
+  if len(buf) < i+length {
+    return i, errs.ErrSmallBuf
+  }
+  {{- if ne .MaxLength 0 }}
+    if length > {{.MaxLength}} {
+      err = errs.ErrMaxLengthExceeded
+    } else {
+  {{- end }}
+    {{- if .Unsafe }}
+      content := buf[i : i+length]
+      slcHeader := (*reflect.SliceHeader)(unsafe.Pointer(&content))
+      strHeader := reflect.StringHeader{
+        Data: slcHeader.Data,
+        Len:  slcHeader.Len,
+      }
+      {{- if eq (len $pt.Stars) 1 }}
+        {{$vn}} = (*{{$ct}})(unsafe.Pointer(&strHeader))
+      {{ else }}
+        {{$vn}} = *(*{{$ct}})(unsafe.Pointer(&strHeader))
+      {{ end }}
+    {{- else }}
+      {{$vn}} = {{$ct}}(buf[i : i+length])
+    {{- end}}
+    i += length
+    {{- include "validator.go.tmpl" . -}}
+  {{- if ne .MaxLength 0 }}
+    }
+  {{- end }}
+}

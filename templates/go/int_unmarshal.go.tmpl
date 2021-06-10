@@ -1,0 +1,14 @@
+{{- /* SimpleTypeVar */ -}}
+  {
+    {{- $pt := (ParsePtrType .Type) }}
+    {{- $vn := .VarName }}
+    {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+    {{- $ct := $pt.Type}}
+    {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
+    {{- $uvt := print "uint" (NumSize .Type) }}
+    var uv {{$uvt}}
+    {{ include "uint_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe) "uv")}}
+    uv = (uv >> 1) ^ {{$uvt}}(({{$pt.Type}}(uv&1)<<{{IntShift .Type}})>>{{IntShift .Type}})
+    {{$vn}} = {{$ct}}(uv)
+    {{- include "validator.go.tmpl" . -}}
+  }

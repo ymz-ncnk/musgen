@@ -1,0 +1,23 @@
+{{- /* {SimpleTypeVar, MUName} */ -}}
+{{- $pt := (ParsePtrType .SimpleTypeVar.Type)}}
+{{- if eq $pt.Type "uint64" "uint32" "uint16" "uint" }}
+  {{- include (print "uint_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- else if eq $pt.Type "int64" "int32" "int16" "int" }}
+  {{- include (print "int_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- else if eq $pt.Type "float64" "float32" }}
+  {{- include (print "float_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- else if eq $pt.Type "string" }}
+  {{- include (print "string_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- else if eq $pt.Type "bool" }}
+  {{- include (print "bool_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- else if eq $pt.Type "byte" "uint8" "int8" }}
+  {{- include (print "byte_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- else if (ParseMapType .SimpleTypeVar.Type).Valid -}}
+  {{- include (print "map_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- else if (ParseArrayType .SimpleTypeVar.Type).Valid -}}
+  {{- include (print "array_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- else if (ParseSliceType .SimpleTypeVar.Type).Valid -}}
+  {{- include (print "slice_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- else }}
+  {{- include (print "custom_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- end }}

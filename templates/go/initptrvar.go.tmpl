@@ -1,0 +1,15 @@
+{{- /* {Name, Type} */ -}}
+{{- $pt := (ParsePtrType .Type) }}
+{{- if $pt.Valid }}
+  {{- if eq (len $pt.Stars) 1 }}
+    {{.Name}} = new({{ClearMapType $pt.Type}})
+  {{- else }}
+    {
+      tmp0 := new({{ClearMapType $pt.Type}})
+      {{- range $i := (iterate (minus (len $pt.Stars) 2)) }}
+        tmp{{add $i 1}} := &tmp{{$i}}
+      {{- end }}
+      {{.Name}} = &tmp{{minus (len $pt.Stars) 2}}
+    }
+  {{- end }}
+{{- end }}

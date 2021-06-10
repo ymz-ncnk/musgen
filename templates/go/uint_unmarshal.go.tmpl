@@ -1,0 +1,31 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type)}}
+  {{- $vn := .VarName}}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $ct := $pt.Type}}
+  {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
+  if i > len(buf) - 1 {
+    return i, errs.ErrSmallBuf
+  } else {
+    shift := 0
+    done := false
+    for l, b := range buf[i:] {
+      if l > {{.MaxLength}} || l == {{.MaxLength}} && b > 1 {
+        return i, errs.ErrOverflow
+      }
+      if b < 0x80 {
+        {{$vn}} = {{$vn}} | {{$ct}}(b)<<shift
+        done = true
+        i += l+1
+        {{- include "validator.go.tmpl" . }}        
+        break
+      }
+      {{$vn}} = {{$vn}} | {{$ct}}(b&0x7F)<<shift
+      shift += 7
+    }
+    if !done {
+      return i, errs.ErrSmallBuf
+    }
+  }
+}

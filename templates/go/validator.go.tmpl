@@ -1,0 +1,3 @@
+{{- if ne .Validator "" }}
+  err = {{.Validator}}({{.VarName}})
+{{- end }}
