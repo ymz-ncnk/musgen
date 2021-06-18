@@ -5,15 +5,5 @@
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   length := len({{$vn}})
   {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
-  {{- if .Unsafe}}
-    strHeader := (*reflect.StringHeader)(unsafe.Pointer({{ if $pt.Valid }}{{.VarName}}{{ else }}&{{.VarName}}{{ end }}))
-    slcHeader := reflect.SliceHeader{
-      Data: strHeader.Data,
-      Len:  strHeader.Len,
-      Cap:  strHeader.Len,
-    }
-    i += copy(buf[i:], *(*[]byte)(unsafe.Pointer(&slcHeader)))
-  {{- else }}
-    i += copy(buf[i:], []byte({{$vn}}))
-  {{- end}}
+  i += copy(buf[i:], {{$vn}})
 }
