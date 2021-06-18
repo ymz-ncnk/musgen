@@ -81,6 +81,7 @@ func New() (MusGen, error) {
 	funcs["MapKeyVarName"] = MapKeyVarName
 	funcs["MapValueVarName"] = MapValueVarName
 	funcs["MakeVar"] = MakeVar
+	funcs["MaxLastByte"] = MaxLastByte
 	funcs["include"] = IncludeFunc(t)
 	funcs["iterate"] = IterateFunc()
 	funcs["add"] = AddFunc()
@@ -493,7 +494,7 @@ func defMaxLength(t string) int {
 	t = re.ReplaceAllString(t, "")
 	switch t {
 	case "uint64":
-		return 9
+		return 10
 	case "uint32":
 		return 5
 	case "uint16":
@@ -504,4 +505,17 @@ func defMaxLength(t string) int {
 		return defMaxLength("uint" + strconv.Itoa(strconv.IntSize))
 	}
 	return 0
+}
+
+func MaxLastByte(t string) int {
+	switch t {
+	case "uint64":
+		return 1
+	case "uint32":
+		return 15
+	case "uint16":
+		return 3
+	default:
+		return 0
+	}
 }
