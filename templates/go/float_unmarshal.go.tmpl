@@ -7,7 +7,7 @@
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}
   var uv {{$uvt}}
-  {{ include "uint_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe) "uv") }}
+  {{ include "uint_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
   {{- if eq (NumSize .Type) 64 }}
     uv = (uv << 32) | (uv >> 32)
     uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)

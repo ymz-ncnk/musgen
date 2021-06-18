@@ -13,5 +13,5 @@
     uv = (uv << 16) | (uv >> 16)
     uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
   {{- end }}
-  {{ include "uint_marshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe) "uv") }}
+  {{ include "uint_marshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
 }

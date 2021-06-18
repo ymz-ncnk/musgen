@@ -4,7 +4,7 @@
   {{- $vn := .VarName}}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   var length int
-  {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe) "length") }}
+  {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
     return i, errs.ErrNegativeLength
   }
@@ -26,12 +26,12 @@
         {{- if (ParsePtrType $mpt.Value).Valid }}
           {{ include "initptrvar.go.tmpl" (MakeVar $vlvn $mpt.Value) }}
         {{- end }}
-        {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Key .KeyValidator 0 .Unsafe) $kevn) "unmarshal") }}
+        {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Key .KeyValidator 0 .Unsafe .Suffix) $kevn) "unmarshal") }}
         if err != nil {
           err = errs.NewMapKeyError({{$kevn}}, err)
           break
         }
-        {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Value .ElemValidator 0 .Unsafe) $vlvn) "unmarshal") }}
+        {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Value .ElemValidator 0 .Unsafe .Suffix) $vlvn) "unmarshal") }}
         if err != nil {
           err = errs.NewMapValueError({{$kevn}}, {{$vlvn}}, err)
           break

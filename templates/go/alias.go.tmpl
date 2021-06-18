@@ -1,21 +1,21 @@
 {{- /* TypeDesc */ -}}
 package {{.Package}}
 
-func (v {{.Name}}) MarshalMUS(buf []byte) int {
+func (v {{.Name}}) Marshal{{.Suffix}}(buf []byte) int {
   i := 0
-  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe) "v") "marshal") }}
+  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe .Suffix) "v") "marshal") }}
   return i
 }
 
-func (v *{{.Name}}) UnmarshalMUS(buf []byte) (int, error) {
+func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   i := 0
   var err error
-  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe) "(*v)") "unmarshal") }}
+  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe .Suffix) "(*v)") "unmarshal") }}
   return i, err
 }
 
-func (v {{.Name}}) SizeMUS() int {
+func (v {{.Name}}) Size{{.Suffix}}() int {
   size := 0
-  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe) "v") "size") }}
+  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe .Suffix) "v") "size") }}
   return size
 }

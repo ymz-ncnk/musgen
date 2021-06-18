@@ -4,7 +4,7 @@
   {{- $vn := .VarName}}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   length := len({{$vn}})
-  {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe) "length") }}
+  {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   {{- if .Unsafe}}
     strHeader := (*reflect.StringHeader)(unsafe.Pointer({{ if $pt.Valid }}{{.VarName}}{{ else }}&{{.VarName}}{{ end }}))
     slcHeader := reflect.SliceHeader{

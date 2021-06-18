@@ -5,5 +5,5 @@
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}
   uv := {{$uvt}}({{$vn}}<<1) ^ {{$uvt}}({{$vn}}>>{{IntShift .Type}})
-  {{ include "uint_marshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe) "uv") }}
+  {{ include "uint_marshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
 }

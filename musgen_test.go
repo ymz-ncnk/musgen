@@ -13,6 +13,7 @@ func TestGoLangAliasMusgen(t *testing.T) {
 		Package: "musgen",
 		Name:    "IntAlias",
 		Fields:  []FieldDesc{{Type: "int", Alias: "IntAlias"}},
+		Suffix:  "MUS",
 	}
 	_, err = musGen.Generate(td, GoLang)
 	if err != nil {
@@ -29,6 +30,7 @@ func TestGoLangStructMusgen(t *testing.T) {
 		Package: "musgen",
 		Name:    "IntStruct",
 		Fields:  []FieldDesc{{Name: "Int", Type: "int"}},
+		Suffix:  "MUS",
 	}
 	_, err = musGen.Generate(td, GoLang)
 	if err != nil {

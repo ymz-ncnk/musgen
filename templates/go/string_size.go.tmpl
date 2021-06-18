@@ -4,6 +4,6 @@
   {{- $vn := .VarName}}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   length := len({{$vn}})
-  {{ include "int_size.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe) "length") }}
+  {{ include "int_size.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   size += len({{$vn}})
 }

@@ -6,7 +6,7 @@
   {{- $st := (ParseSliceType $pt.Type).Type}}
   {{- $index := ArrayIndex .VarName}}
   var length int
-  {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe) "length") }}
+  {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
     return i, errs.ErrNegativeLength
   }
@@ -21,7 +21,7 @@
       {{- if (ParsePtrType $st).Valid }}
         {{ include "initptrvar.go.tmpl" (MakeVar $elvn $st) }}
       {{- end }}
-      {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $st .ElemValidator 0 .Unsafe) (print $vn "[" $index "]")) "unmarshal") }}
+      {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $st .ElemValidator 0 .Unsafe .Suffix) (print $vn "[" $index "]")) "unmarshal") }}
       if err != nil {
         err = errs.NewSliceError({{$index}}, err)
         break

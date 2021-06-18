@@ -6,7 +6,7 @@
   {{- $ct := $pt.Type}}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   var length int
-  {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe) "length") }}
+  {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
     return i, errs.ErrNegativeLength
   } 

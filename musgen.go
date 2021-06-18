@@ -28,6 +28,7 @@ type TypeDesc struct {
 	Package string
 	Name    string
 	Unsafe  bool
+	Suffix  string
 	Fields  []FieldDesc
 }
 
@@ -48,8 +49,9 @@ type SimpleTypeVar struct {
 }
 
 type SimpleType struct {
-	Unsafe        bool
 	Type          string
+	Suffix        string
+	Unsafe        bool
 	MaxLength     int
 	Alias         string
 	Validator     string
@@ -318,9 +320,10 @@ func ParsePtrType(t string) struct {
 // }
 
 // MakeSimpleType creates SimpleType.
-func MakeSimpleType(t string, unsafe bool) SimpleType {
+func MakeSimpleType(t string, unsafe bool, suffix string) SimpleType {
 	return SimpleType{
 		Type:      t,
+		Suffix:    suffix,
 		Unsafe:    unsafe,
 		MaxLength: defMaxLength(t),
 	}
@@ -328,9 +331,10 @@ func MakeSimpleType(t string, unsafe bool) SimpleType {
 
 // MakeValidSimpleType creates SimpleType with validator and maxLength.
 func MakeValidSimpleType(t, validator string,
-	maxLength int, unsafe bool) SimpleType {
+	maxLength int, unsafe bool, suffix string) SimpleType {
 	st := SimpleType{
 		Type:      t,
+		Suffix:    suffix,
 		Unsafe:    unsafe,
 		Validator: validator,
 		MaxLength: defMaxLength(t),
@@ -342,9 +346,10 @@ func MakeValidSimpleType(t, validator string,
 }
 
 // MakeSimpleTypeFromField creates SimpleType from FieldDesc.
-func MakeSimpleTypeFromField(f FieldDesc, unsafe bool) SimpleType {
+func MakeSimpleTypeFromField(f FieldDesc, unsafe bool, suffix string) SimpleType {
 	st := SimpleType{
 		Type:          f.Type,
+		Suffix:        suffix,
 		Unsafe:        unsafe,
 		Alias:         f.Alias,
 		Validator:     f.Validator,

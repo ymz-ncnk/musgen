@@ -3,6 +3,6 @@
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName}}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
-  si := {{$vn}}.MarshalMUS(buf[i:])
+  si := {{$vn}}.Marshal{{.Suffix}}(buf[i:])
   i += si
 }

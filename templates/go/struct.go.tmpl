@@ -1,25 +1,27 @@
 {{- /* TypeDesc */ -}}
 package {{.Package}}
 
-func (v {{.Name}}) MarshalMUS(buf []byte) int {
+func (v {{.Name}}) Marshal{{.Suffix}}(buf []byte) int {
   i := 0
   {{- $unsafe := .Unsafe }}
+  {{- $suffix := .Suffix}}
   {{- range $index, $field := .Fields }}
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe) (print "v." $field.Name)) "marshal") }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe $suffix) (print "v." $field.Name)) "marshal") }}
   {{- end }}
   return i
 }
 
-func (v *{{.Name}}) UnmarshalMUS(buf []byte) (int, error) {
+func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   i := 0
   {{- $unsafe := .Unsafe }}
+  {{- $suffix := .Suffix}}
   var err error
   {{- range $index, $field := .Fields }}
     {{- $fvn := (print "v." $field.Name) }}
     {{- if (ParsePtrType $field.Type).Valid }}
       {{- include "initptrvar.go.tmpl" (MakeVar $fvn $field.Type) }}
     {{- end }}
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe) $fvn) "unmarshal") }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe $suffix) $fvn) "unmarshal") }}
     if err != nil {
       return i, errs.NewFieldError({{print "\"" $field.Name "\""}}, err)
     }
@@ -27,11 +29,12 @@ func (v *{{.Name}}) UnmarshalMUS(buf []byte) (int, error) {
   return i, err
 }
 
-func (v {{.Name}}) SizeMUS() int {
+func (v {{.Name}}) Size{{.Suffix}}() int {
   size := 0
   {{- $unsafe := .Unsafe }}
+  {{- $suffix := .Suffix}}
   {{- range $index, $field := .Fields }}
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe) (print "v." $field.Name)) "size") }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe $suffix) (print "v." $field.Name)) "size") }}
   {{- end }}
   return size
 }

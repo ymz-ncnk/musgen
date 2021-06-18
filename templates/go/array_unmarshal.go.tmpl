@@ -11,7 +11,7 @@
     {{- if (ParsePtrType $at).Valid }}
       {{ include "initptrvar.go.tmpl" (MakeVar $elvn $at) }}
     {{- end }}
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $at .ElemValidator 0 .Unsafe) $elvn) "unmarshal") }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $at .ElemValidator 0 .Unsafe .Suffix) $elvn) "unmarshal") }}
     if err != nil {
       err = errs.NewArrayError({{$index}}, err)
       break
