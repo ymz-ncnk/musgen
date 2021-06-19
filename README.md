@@ -23,10 +23,8 @@ Type description consists of field descriptions. Each of which may contain:
   list, array or map field.
 - KeyValidator - name of the function, which validates keys of the map field.
 
-Also, the type description has an unsafe flag. If a new buffer will be created 
-for every Marshal(Unmarshaоl) of that type, unsafe flag could be set to true. 
-In this case, generated code will be faster. Otherwise, if the same buffer will 
-be used or if you want to modify it, the unsafe flag should be set to false.
+Also, the type description has an unsafe flag. If it's true, every string will
+be decoded from the buffer using the faster, unsafe method.
 
 # Supported languages
 
