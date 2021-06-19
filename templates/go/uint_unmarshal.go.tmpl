@@ -11,8 +11,7 @@
     shift := 0
     done := false
     for l, b := range buf[i:] {
-      {{- $mlb := MaxLastByte $pt.Type }}
-      if l > {{minus .MaxLength 1}} {{if ne $mlb 0}}|| (l == {{minus .MaxLength 1}} && b > {{$mlb}}){{end}} {
+      if l == {{minus .MaxLength 1}} && b > {{MaxLastByte $pt.Type}} {
         return i, errs.ErrOverflow
       }
       if b < 0x80 {
