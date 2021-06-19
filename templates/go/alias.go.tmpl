@@ -10,7 +10,7 @@ func (v {{.Name}}) Marshal{{.Suffix}}(buf []byte) int {
 func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   i := 0
   var err error
-  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe .Suffix) "(*v)") "unmarshal") }}
+  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimplePtrTypeFromField (index .Fields 0) .Unsafe .Suffix) "v") "unmarshal") }}
   return i, err
 }
 

@@ -19,7 +19,7 @@ func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   {{- range $index, $field := .Fields }}
     {{- $fvn := (print "v." $field.Name) }}
     {{- if (ParsePtrType $field.Type).Valid }}
-      {{- include "initptrvar.go.tmpl" (MakeVar $fvn $field.Type) }}
+      {{- include "initptrvar.go.tmpl" (MakeVar $fvn $field.Type false) }}
     {{- end }}
     {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe $suffix) $fvn) "unmarshal") }}
     if err != nil {

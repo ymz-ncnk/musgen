@@ -19,7 +19,7 @@
     for {{$index}} := 0; {{$index}} < length; {{$index}}++ {
       {{- $elvn := (print $vn "[" $index "]") }}
       {{- if (ParsePtrType $st).Valid }}
-        {{ include "initptrvar.go.tmpl" (MakeVar $elvn $st) }}
+        {{- include "initptrvar.go.tmpl" (MakeVar $elvn $st false) }}
       {{- end }}
       {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $st .ElemValidator 0 .Unsafe .Suffix) (print $vn "[" $index "]")) "unmarshal") }}
       if err != nil {

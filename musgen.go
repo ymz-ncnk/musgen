@@ -13,6 +13,8 @@ import (
 // Two main templates are alias.go.tmpl and struct.go.tmpl.
 // After changing a template run '$ go generate'.
 
+var UintWithSystemSize = "uint" + strconv.Itoa(strconv.IntSize)
+
 type Lang int
 
 const (
@@ -74,6 +76,7 @@ func New() (MusGen, error) {
 	funcs["MakeSimpleType"] = MakeSimpleType
 	funcs["MakeValidSimpleType"] = MakeValidSimpleType
 	funcs["MakeSimpleTypeFromField"] = MakeSimpleTypeFromField
+	funcs["MakeSimplePtrTypeFromField"] = MakeSimplePtrTypeFromField
 	funcs["MakeTmplData"] = MakeTmplData
 	funcs["NumSize"] = NumSize
 	funcs["IntShift"] = IntShift
@@ -364,6 +367,11 @@ func MakeSimpleTypeFromField(f FieldDesc, unsafe bool, suffix string) SimpleType
 	return st
 }
 
+func MakeSimplePtrTypeFromField(f FieldDesc, unsafe bool, suffix string) SimpleType {
+	f.Type = "*" + f.Type
+	return MakeSimpleTypeFromField(f, unsafe, suffix)
+}
+
 // IncludeFunc creates template's include func.
 func IncludeFunc(tmpl *template.Template) func(string, interface{}) (string,
 	error) {
@@ -462,16 +470,19 @@ func MapValueVarName(vn string) string {
 	return mapUnitVarName(vn, "vl")
 }
 
-func MakeVar(name string, t string) struct {
+func MakeVar(name string, t string, init bool) struct {
 	Name string
 	Type string
+	Init bool
 } {
 	return struct {
 		Name string
 		Type string
+		Init bool
 	}{
 		Name: name,
 		Type: t,
+		Init: init,
 	}
 }
 
@@ -502,7 +513,7 @@ func defMaxLength(t string) int {
 	case "uint8":
 		return 1
 	case "uint":
-		return defMaxLength("uint" + strconv.Itoa(strconv.IntSize))
+		return defMaxLength(UintWithSystemSize)
 	}
 	return 0
 }
@@ -515,7 +526,9 @@ func MaxLastByte(t string) int {
 		return 15
 	case "uint16":
 		return 3
+	case "uint":
+		return MaxLastByte(UintWithSystemSize)
 	default:
-		return 0
+		panic("unsupported type")
 	}
 }

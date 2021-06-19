@@ -14,7 +14,7 @@ func (v {{.Name}}) Marshal{{.Suffix}}(buf []byte) int {
 func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   i := 0
   var err error
-  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe .Suffix) "(*v)") "unmarshal") }}
+  {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimplePtrTypeFromField (index .Fields 0) .Unsafe .Suffix) "v") "unmarshal") }}
   return i, err
 }
 
@@ -54,7 +54,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   for {{$index}} := 0; {{$index}} < {{$al}}; {{$index}}++ {
     {{- $elvn := (print $vn "[" $index "]") }}
     {{- if (ParsePtrType $at).Valid }}
-      {{ include "initptrvar.go.tmpl" (MakeVar $elvn $at) }}
+      {{- include "initptrvar.go.tmpl" (MakeVar $elvn $at false) }}
     {{- end }}
     {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $at .ElemValidator 0 .Unsafe .Suffix) $elvn) "unmarshal") }}
     if err != nil {
@@ -221,12 +221,15 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{$vn}} = {{$ct}}(math.Float{{(NumSize .Type)}}frombits(uv))
   {{- include "validator.go.tmpl" . -}}
 }`
-	tmpls["initptrvar.go.tmpl"] = `{{- /* {Name, Type} */ -}}
+	tmpls["initptrvar.go.tmpl"] = `{{- /* {Name, Type, Init} */ -}}
 {{- $pt := (ParsePtrType .Type) }}
 {{- if $pt.Valid }}
   {{- if eq (len $pt.Stars) 1 }}
-    {{.Name}} = new({{ClearMapType $pt.Type}})
+    {{.Name}} {{if .Init}}:{{end}}= new({{ClearMapType $pt.Type}})
   {{- else }}
+    {{- if .Init }}
+      var {{.Name}} {{ClearMapType .Type}}
+    {{- end }}
     {
       tmp0 := new({{ClearMapType $pt.Type}})
       {{- range $i := (iterate (minus (len $pt.Stars) 2)) }}
@@ -314,24 +317,26 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
     {{- $kevn := MapKeyVarName .VarName }}
     {{- $vlvn := MapValueVarName .VarName }}
     for ; length > 0; length-- {
+      {{- if (ParsePtrType $mpt.Key).Valid }}
+        {{- include "initptrvar.go.tmpl" (MakeVar $kevn $mpt.Key true) }}
+      {{- else }}
         var {{$kevn}} {{ClearMapType $mpt.Key}}
-        {{- if (ParsePtrType $mpt.Key).Valid }}
-          {{ include "initptrvar.go.tmpl" (MakeVar $kevn $mpt.Key) }}
-        {{- end }}
+      {{- end }}
+      {{- if (ParsePtrType $mpt.Value).Valid }}
+        {{- include "initptrvar.go.tmpl" (MakeVar $vlvn $mpt.Value true) }}
+      {{- else }}
         var {{$vlvn}} {{ClearMapType $mpt.Value}}
-        {{- if (ParsePtrType $mpt.Value).Valid }}
-          {{ include "initptrvar.go.tmpl" (MakeVar $vlvn $mpt.Value) }}
-        {{- end }}
-        {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Key .KeyValidator 0 .Unsafe .Suffix) $kevn) "unmarshal") }}
-        if err != nil {
-          err = errs.NewMapKeyError({{$kevn}}, err)
-          break
-        }
-        {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Value .ElemValidator 0 .Unsafe .Suffix) $vlvn) "unmarshal") }}
-        if err != nil {
-          err = errs.NewMapValueError({{$kevn}}, {{$vlvn}}, err)
-          break
-        }
+      {{- end }}
+      {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Key .KeyValidator 0 .Unsafe .Suffix) $kevn) "unmarshal") }}
+      if err != nil {
+        err = errs.NewMapKeyError({{$kevn}}, err)
+        break
+      }
+      {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Value .ElemValidator 0 .Unsafe .Suffix) $vlvn) "unmarshal") }}
+      if err != nil {
+        err = errs.NewMapValueError({{$kevn}}, {{$vlvn}}, err)
+        break
+      }
       ({{$vn}})[{{$kevn}}] = {{$vlvn}}
     }
     {{- if ne .Validator "" }}
@@ -411,7 +416,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
     for {{$index}} := 0; {{$index}} < length; {{$index}}++ {
       {{- $elvn := (print $vn "[" $index "]") }}
       {{- if (ParsePtrType $st).Valid }}
-        {{ include "initptrvar.go.tmpl" (MakeVar $elvn $st) }}
+        {{- include "initptrvar.go.tmpl" (MakeVar $elvn $st false) }}
       {{- end }}
       {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $st .ElemValidator 0 .Unsafe .Suffix) (print $vn "[" $index "]")) "unmarshal") }}
       if err != nil {
@@ -448,10 +453,10 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 }`
 	tmpls["string_unmarshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
-  {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
+  {{- $pt := (ParsePtrType .Type) }}
+  {{- $vn := .VarName }}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
-  {{- $ct := $pt.Type}}
+  {{- $ct := $pt.Type }}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   var length int
   {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
@@ -469,15 +474,15 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
     {{- if .Unsafe }}
       content := buf[i : i+length]
       slcHeader := (*reflect.SliceHeader)(unsafe.Pointer(&content))
-      strHeader := reflect.StringHeader{
-        Data: slcHeader.Data,
-        Len:  slcHeader.Len,
-      }
-      {{- if eq (len $pt.Stars) 1 }}
-        {{$vn}} = (*{{$ct}})(unsafe.Pointer(&strHeader))
-      {{ else }}
-        {{$vn}} = *(*{{$ct}})(unsafe.Pointer(&strHeader))
-      {{ end }}
+      {{- if eq (len $pt.Stars) 0 }}
+        strHeader := (*reflect.StringHeader)(unsafe.Pointer(&{{.VarName}}))
+      {{- else if eq (len $pt.Stars) 1 }}
+        strHeader := (*reflect.StringHeader)(unsafe.Pointer({{.VarName}}))
+      {{- else }}
+        strHeader := (*reflect.StringHeader)(unsafe.Pointer({{replace $pt.Stars "*" "" 1}}{{.VarName}}))
+      {{- end }}
+      strHeader.Data = slcHeader.Data
+      strHeader.Len = slcHeader.Len
     {{- else }}
       {{$vn}} = {{$ct}}(buf[i : i+length])
     {{- end}}
@@ -508,7 +513,7 @@ func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   {{- range $index, $field := .Fields }}
     {{- $fvn := (print "v." $field.Name) }}
     {{- if (ParsePtrType $field.Type).Valid }}
-      {{- include "initptrvar.go.tmpl" (MakeVar $fvn $field.Type) }}
+      {{- include "initptrvar.go.tmpl" (MakeVar $fvn $field.Type false) }}
     {{- end }}
     {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe $suffix) $fvn) "unmarshal") }}
     if err != nil {
@@ -564,8 +569,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
     shift := 0
     done := false
     for l, b := range buf[i:] {
-      {{- $mlb := MaxLastByte $pt.Type }}
-      if l > {{minus .MaxLength 1}} {{if ne $mlb 0}}|| (l == {{minus .MaxLength 1}} && b > {{$mlb}}){{end}} {
+      if l == {{minus .MaxLength 1}} && b > {{MaxLastByte $pt.Type}} {
         return i, errs.ErrOverflow
       }
       if b < 0x80 {
