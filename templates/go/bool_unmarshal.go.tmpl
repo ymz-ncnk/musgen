@@ -4,18 +4,17 @@
   {{- $vn := .VarName}}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   if i > len(buf) - 1 {
-    return i, errs.ErrSmallBuf  
+    return i, errs.ErrSmallBuf
+  }
+  if buf[i] == 0x01 {
+    {{$vn}} = true
+    i++
+    {{- include "validator.go.tmpl" . -}}
+  } else if buf[i] == 0x00 {
+    {{$vn}} = false
+    i++
+    {{- include "validator.go.tmpl" . -}}
   } else {
-    if buf[i] == 0x01 {
-      {{$vn}} = true
-      i++
-      {{- include "validator.go.tmpl" . -}}
-    } else if buf[i] == 0x00 {
-      {{$vn}} = false
-      i++
-      {{- include "validator.go.tmpl" . -}}
-    } else {
-      err = errs.ErrWrongByte
-    }
+    err = errs.ErrWrongByte
   }
 }

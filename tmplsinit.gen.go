@@ -92,19 +92,18 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- $vn := .VarName}}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   if i > len(buf) - 1 {
-    return i, errs.ErrSmallBuf  
+    return i, errs.ErrSmallBuf
+  }
+  if buf[i] == 0x01 {
+    {{$vn}} = true
+    i++
+    {{- include "validator.go.tmpl" . -}}
+  } else if buf[i] == 0x00 {
+    {{$vn}} = false
+    i++
+    {{- include "validator.go.tmpl" . -}}
   } else {
-    if buf[i] == 0x01 {
-      {{$vn}} = true
-      i++
-      {{- include "validator.go.tmpl" . -}}
-    } else if buf[i] == 0x00 {
-      {{$vn}} = false
-      i++
-      {{- include "validator.go.tmpl" . -}}
-    } else {
-      err = errs.ErrWrongByte
-    }
+    err = errs.ErrWrongByte
   }
 }`
 	tmpls["byte_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
@@ -130,11 +129,10 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
     return i, errs.ErrSmallBuf
-  } else {
-    {{$vn}} = {{$ct}}(buf[i])
-    i++
-    {{- include "validator.go.tmpl" . -}}
   }
+  {{$vn}} = {{$ct}}(buf[i])
+  i++
+  {{- include "validator.go.tmpl" . -}}
 }`
 	tmpls["custom_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
@@ -565,26 +563,25 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
     return i, errs.ErrSmallBuf
-  } else {
-    shift := 0
-    done := false
-    for l, b := range buf[i:] {
-      if l == {{minus .MaxLength 1}} && b > {{MaxLastByte $pt.Type}} {
-        return i, errs.ErrOverflow
-      }
-      if b < 0x80 {
-        {{$vn}} = {{$vn}} | {{$ct}}(b)<<shift
-        done = true
-        i += l+1
-        {{- include "validator.go.tmpl" . }}        
-        break
-      }
-      {{$vn}} = {{$vn}} | {{$ct}}(b&0x7F)<<shift
-      shift += 7
+  }
+  shift := 0
+  done := false
+  for l, b := range buf[i:] {
+    if l == {{minus .MaxLength 1}} && b > {{MaxLastByte $pt.Type}} {
+      return i, errs.ErrOverflow
     }
-    if !done {
-      return i, errs.ErrSmallBuf
+    if b < 0x80 {
+      {{$vn}} = {{$vn}} | {{$ct}}(b)<<shift
+      done = true
+      i += l+1
+      {{- include "validator.go.tmpl" . }}        
+      break
     }
+    {{$vn}} = {{$vn}} | {{$ct}}(b&0x7F)<<shift
+    shift += 7
+  }
+  if !done {
+    return i, errs.ErrSmallBuf
   }
 }`
 	tmpls["validator.go.tmpl"] = `{{- if ne .Validator "" }}

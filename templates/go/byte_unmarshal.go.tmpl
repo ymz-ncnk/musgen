@@ -7,9 +7,8 @@
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
     return i, errs.ErrSmallBuf
-  } else {
-    {{$vn}} = {{$ct}}(buf[i])
-    i++
-    {{- include "validator.go.tmpl" . -}}
   }
+  {{$vn}} = {{$ct}}(buf[i])
+  i++
+  {{- include "validator.go.tmpl" . -}}
 }

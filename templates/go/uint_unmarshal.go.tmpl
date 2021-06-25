@@ -7,25 +7,24 @@
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
     return i, errs.ErrSmallBuf
-  } else {
-    shift := 0
-    done := false
-    for l, b := range buf[i:] {
-      if l == {{minus .MaxLength 1}} && b > {{MaxLastByte $pt.Type}} {
-        return i, errs.ErrOverflow
-      }
-      if b < 0x80 {
-        {{$vn}} = {{$vn}} | {{$ct}}(b)<<shift
-        done = true
-        i += l+1
-        {{- include "validator.go.tmpl" . }}        
-        break
-      }
-      {{$vn}} = {{$vn}} | {{$ct}}(b&0x7F)<<shift
-      shift += 7
+  }
+  shift := 0
+  done := false
+  for l, b := range buf[i:] {
+    if l == {{minus .MaxLength 1}} && b > {{MaxLastByte $pt.Type}} {
+      return i, errs.ErrOverflow
     }
-    if !done {
-      return i, errs.ErrSmallBuf
+    if b < 0x80 {
+      {{$vn}} = {{$vn}} | {{$ct}}(b)<<shift
+      done = true
+      i += l+1
+      {{- include "validator.go.tmpl" . }}        
+      break
     }
+    {{$vn}} = {{$vn}} | {{$ct}}(b&0x7F)<<shift
+    shift += 7
+  }
+  if !done {
+    return i, errs.ErrSmallBuf
   }
 }
