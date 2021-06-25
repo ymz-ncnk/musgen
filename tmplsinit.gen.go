@@ -5,12 +5,14 @@ func init() {
 	tmpls["alias.go.tmpl"] = `{{- /* TypeDesc */ -}}
 package {{.Package}}
 
+// Marshal{{.Suffix}} fills buf with the MUS encoding of v.
 func (v {{.Name}}) Marshal{{.Suffix}}(buf []byte) int {
   i := 0
   {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe .Suffix) "v") "marshal") }}
   return i
 }
 
+// Unmarshal{{.Suffix}} parses the MUS-encoded buf, and sets the result to *v.
 func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   i := 0
   var err error
@@ -18,6 +20,7 @@ func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   return i, err
 }
 
+// Size{{.Suffix}} returns the size of the MUS-encoded v.
 func (v {{.Name}}) Size{{.Suffix}}() int {
   size := 0
   {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField (index .Fields 0) .Unsafe .Suffix) "v") "size") }}
@@ -493,6 +496,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	tmpls["struct.go.tmpl"] = `{{- /* TypeDesc */ -}}
 package {{.Package}}
 
+// Marshal{{.Suffix}} fills buf with the MUS encoding of v.
 func (v {{.Name}}) Marshal{{.Suffix}}(buf []byte) int {
   i := 0
   {{- $unsafe := .Unsafe }}
@@ -503,6 +507,7 @@ func (v {{.Name}}) Marshal{{.Suffix}}(buf []byte) int {
   return i
 }
 
+// Unmarshal{{.Suffix}} parses the MUS-encoded buf, and sets the result to *v.
 func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   i := 0
   {{- $unsafe := .Unsafe }}
@@ -521,6 +526,7 @@ func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
   return i, err
 }
 
+// Size{{.Suffix}} returns the size of the MUS-encoded v.
 func (v {{.Name}}) Size{{.Suffix}}() int {
   size := 0
   {{- $unsafe := .Unsafe }}
