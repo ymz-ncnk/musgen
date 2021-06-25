@@ -13,11 +13,14 @@ import (
 // Two main templates are alias.go.tmpl and struct.go.tmpl.
 // After changing a template run '$ go generate'.
 
+// UintWithSystemSize system uint type with size.
 var UintWithSystemSize = "uint" + strconv.Itoa(strconv.IntSize)
 
+// Lang represents supported languages.
 type Lang int
 
 const (
+	// GoLang constant.
 	GoLang Lang = iota
 )
 
@@ -25,7 +28,8 @@ func (l Lang) String() string {
 	return [...]string{"go"}[l]
 }
 
-// Pipeline for struct.tmpl.
+// TypeDesc represents a type description. It is a pipeline for the
+// struct.go.tmpl.
 type TypeDesc struct {
 	Package string
 	Name    string
@@ -34,6 +38,7 @@ type TypeDesc struct {
 	Fields  []FieldDesc
 }
 
+// FieldDesc represents a field description. It is a part of the TypeDesc.
 type FieldDesc struct {
 	Name          string
 	Type          string
@@ -44,12 +49,13 @@ type FieldDesc struct {
 	ElemValidator string
 }
 
-// Pipeline for simpletypes.tmpl.
+// SimpleTypeVar pipeline for the simpletypes.go.tmpl.
 type SimpleTypeVar struct {
 	SimpleType
 	VarName string
 }
 
+// SimpleType represents a simplest supported type, like bool, uint64, ...
 type SimpleType struct {
 	Type          string
 	Suffix        string
@@ -63,7 +69,7 @@ type SimpleType struct {
 
 var tmpls map[string]string
 
-// New creates new MusGen.
+// New returns a new MusGen.
 func New() (MusGen, error) {
 	t := template.New("base")
 	funcs := make(template.FuncMap)
@@ -103,7 +109,7 @@ func New() (MusGen, error) {
 	return MusGen{t}, err
 }
 
-// MusGen is a code generator for a MUS format.
+// MusGen is a code generator for the MUS format.
 type MusGen struct {
 	t *template.Template
 }
@@ -138,7 +144,7 @@ func Alias(td TypeDesc) bool {
 }
 
 // MakeTmplData is a template function. Creates a pipeline for the
-// simpletypes.tmpl.
+// simpletypes.go.tmpl.
 func MakeTmplData(simpleTypeVar SimpleTypeVar, muName string) struct {
 	SimpleTypeVar
 	MUName string
@@ -152,7 +158,7 @@ func MakeTmplData(simpleTypeVar SimpleTypeVar, muName string) struct {
 	}
 }
 
-// SetUpVarName is a template function. Combines simpleType with the varName.
+// SetUpVarName is a template function. Combines a simpleType with a varName.
 func SetUpVarName(simpleType SimpleType, varName string) SimpleTypeVar {
 	return SimpleTypeVar{
 		SimpleType: simpleType,
@@ -200,7 +206,7 @@ func ParseMapType(t string) struct {
 	}
 }
 
-// ClearMapType is a template function. Removes map numbers.
+// ClearMapType is a template function. It removes map numbers.
 func ClearMapType(mt string) string {
 	re := regexp.MustCompile(`-\d`)
 	return re.ReplaceAllString(mt, "")
@@ -367,7 +373,9 @@ func MakeSimpleTypeFromField(f FieldDesc, unsafe bool, suffix string) SimpleType
 	return st
 }
 
-func MakeSimplePtrTypeFromField(f FieldDesc, unsafe bool, suffix string) SimpleType {
+// MakeSimplePtrTypeFromField creates SimpleType from FieldDesc.
+func MakeSimplePtrTypeFromField(f FieldDesc, unsafe bool,
+	suffix string) SimpleType {
 	f.Type = "*" + f.Type
 	return MakeSimpleTypeFromField(f, unsafe, suffix)
 }
@@ -470,6 +478,7 @@ func MapValueVarName(vn string) string {
 	return mapUnitVarName(vn, "vl")
 }
 
+// MakeVar returns a pipeline for the initptrvar.go.tmpl.
 func MakeVar(name string, t string, init bool) struct {
 	Name string
 	Type string
@@ -518,6 +527,10 @@ func defMaxLength(t string) int {
 	return 0
 }
 
+// MaxLastByte returns how big could be the last allowed byte for the
+// specified type.
+// For example, "uint64" number couldn't take more than 9 bytes, and the last
+// one couldn't be bigger than 1.
 func MaxLastByte(t string) int {
 	switch t {
 	case "uint64":
