@@ -127,7 +127,6 @@ func (gen MusGen) Generate(td TypeDesc, lang Lang) ([]byte, error) {
 	}
 }
 
-// generate generates a code with help of the template file.
 func (gen MusGen) generate(td TypeDesc, tmplFile string) ([]byte, error) {
 	buf := bytes.NewBuffer(make([]byte, 0))
 	err := gen.t.ExecuteTemplate(buf, tmplFile, td)
@@ -158,7 +157,8 @@ func MakeTmplData(simpleTypeVar SimpleTypeVar, muName string) struct {
 	}
 }
 
-// SetUpVarName is a template function. Combines a simpleType with a varName.
+// SetUpVarName is a template function. Sets up variable name for the
+// SimpleType.
 func SetUpVarName(simpleType SimpleType, varName string) SimpleTypeVar {
 	return SimpleTypeVar{
 		SimpleType: simpleType,
@@ -167,11 +167,11 @@ func SetUpVarName(simpleType SimpleType, varName string) SimpleTypeVar {
 }
 
 // ParseMapType is a template function. If the given string represents a map
-// type, Valid == true. The required format is map-n[Key]Value-n, where n
-// is a map number.
-// For example, we could rewrite the type map[string]map[string]int with map
-// number like - map-1[string]-1map-0[string]-0int.
-// Map numbers help parse a type of the map's key.
+// type, Valid == true. The required format is map-n[Key]Value-n, where n is a
+// map number.
+//
+// Map number helps to parse a map type. For example, we could rewrite the type
+// map[string]map[string]int as - map-1[string]-1map-0[string]-0int.
 func ParseMapType(t string) struct {
 	Valid bool
 	Key   string
@@ -275,6 +275,7 @@ func ParseSliceType(t string) struct {
 
 // ParsePtrType is a template function. If the given string represents a
 // pointer type, than Valid == true. The required format is *Type.
+//
 // If Valid == false, Type is equal to the given type.
 func ParsePtrType(t string) struct {
 	Valid bool
@@ -339,7 +340,7 @@ func MakeSimpleType(t string, unsafe bool, suffix string) SimpleType {
 	}
 }
 
-// MakeValidSimpleType creates SimpleType with validator and maxLength.
+// MakeValidSimpleType creates SimpleType with the validator and maxLength.
 func MakeValidSimpleType(t, validator string,
 	maxLength int, unsafe bool, suffix string) SimpleType {
 	st := SimpleType{
@@ -440,12 +441,13 @@ func NumSize(t string) int {
 	return strconv.IntSize
 }
 
-// IntShift is a template function.
+// IntShift is a template function. The given string should represent sized
+// type, like int8, int16, ... Returns the size redused by one.
 func IntShift(t string) string {
 	return strconv.Itoa(NumSize(t) - 1)
 }
 
-// ArrayIndex is a template function. It makes from vm a variable name for the
+// ArrayIndex is a template function. It makes from vn a variable name for the
 // array index, which is used in a 'for' cycle.
 // The first array index is j, subarray index is jj, next subarray index is
 // jjj, ...
@@ -462,7 +464,7 @@ func prevArrayIndex(vn string) string {
 	return ""
 }
 
-// MapKeyVarName is a template function. It makes from vm a variable name for a
+// MapKeyVarName is a template function. It makes from vn a variable name for a
 // map key.
 // The first map key variable name is kem, submap key variable name is kemm,
 // next key variable name is kemmm, ...
@@ -470,10 +472,10 @@ func MapKeyVarName(vn string) string {
 	return mapUnitVarName(vn, "ke")
 }
 
-// MapValueVarName is a template function. It makes from vm a variable name for
-// a map key.
-// The first map's key variable name is vlm, submap's key variable name is vlmm,
-// next submap's key variable name is vlmmm, ...
+// MapValueVarName is a template function. It makes from vn a variable name for
+// a map value.
+// The first map value variable name is vlm, submap value variable name is vlmm,
+// next submap value variable name is vlmmm, ...
 func MapValueVarName(vn string) string {
 	return mapUnitVarName(vn, "vl")
 }
@@ -495,20 +497,16 @@ func MakeVar(name string, t string, init bool) struct {
 	}
 }
 
-// mapUnitVarName receives VarName and unit. Returns a name of the map's key or
-// value variable.
 func mapUnitVarName(vn string, unit string) string {
 	re := regexp.MustCompile("m+$")
 	return unit + re.FindString(filterNotAlphabeticChars(vn)+"m")
 }
 
-// filterNotAlphabeticChars removes not alphabetic characters
 func filterNotAlphabeticChars(vn string) string {
 	re := regexp.MustCompile(`[^a-zA-Z]`)
 	return re.ReplaceAllString(vn, "")
 }
 
-// defMaxLength returns default MaxLength.
 func defMaxLength(t string) int {
 	re := regexp.MustCompile(`^\**`)
 	t = re.ReplaceAllString(t, "")
@@ -530,7 +528,7 @@ func defMaxLength(t string) int {
 // MaxLastByte returns how big could be the last allowed byte for the
 // specified type.
 // For example, "uint64" number couldn't take more than 9 bytes, and the last
-// one couldn't be bigger than 1.
+// one must be less or equal to 1.
 func MaxLastByte(t string) int {
 	switch t {
 	case "uint64":
