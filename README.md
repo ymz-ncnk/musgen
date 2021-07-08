@@ -1,8 +1,8 @@
-# Musgen
-Musgen is a code generator for the binary MUS format with validation support.
+# MusGen
+MusGen is a code generator for the binary MUS format with validation support.
 
 # Overview
-Musgen generates 3 methods for a type description and language:
+MusGen generates 3 methods for a type description and language:
 - Marshal(buf) - encodes data into the MUS format. It will crash if the buffer
   length < Size().
 - Unmarshal(buf) - decodes data from the MUS format + performs validation. May 
