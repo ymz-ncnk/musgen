@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestGoLangAliasMusgen(t *testing.T) {
+func TestGoLangAliasMusGen(t *testing.T) {
 	musGen, err := New()
 	if err != nil {
 		t.Error(err)
@@ -21,7 +21,7 @@ func TestGoLangAliasMusgen(t *testing.T) {
 	}
 }
 
-func TestGoLangStructMusgen(t *testing.T) {
+func TestGoLangStructMusGen(t *testing.T) {
 	musGen, err := New()
 	if err != nil {
 		t.Error(err)
