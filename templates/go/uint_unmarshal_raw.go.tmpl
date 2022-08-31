@@ -1,0 +1,39 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type)}}
+  {{- $vn := .VarName}}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
+  {{- $ns := NumSize $pt.Type}}
+  if len(buf) < {{div $ns 8}} {
+    return i, errs.ErrSmallBuf
+  }
+  {{- if .Unsafe }}
+    {{$vn}} = *(*{{$ct}})(unsafe.Pointer(&buf[i]))
+    i += {{div $ns 8}}
+  {{- else }}
+    {{$vn}} = {{$ct}}(buf[i])
+    i++
+    {{- if ge $ns 16 }}
+      {{$vn}} |= {{$ct}}(buf[i])<<8
+      i++
+    {{- end }}
+    {{- if ge $ns 32 }}
+      {{$vn}} |= {{$ct}}(buf[i])<<16
+      i++
+      {{$vn}} |= {{$ct}}(buf[i])<<24
+      i++
+    {{- end }}
+    {{- if eq $ns 64 }}
+      {{$vn}} |= {{$ct}}(buf[i])<<32
+      i++
+      {{$vn}} |= {{$ct}}(buf[i])<<40
+      i++
+      {{$vn}} |= {{$ct}}(buf[i])<<48
+      i++
+      {{$vn}} |= {{$ct}}(buf[i])<<56
+      i++
+    {{- end }}
+  {{- end }}
+  {{- include "validator.go.tmpl" . }}
+}

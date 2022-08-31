@@ -1,7 +1,11 @@
 {{- /* {SimpleTypeVar, MUName} */ -}}
 {{- $pt := (ParsePtrType .SimpleTypeVar.Type)}}
 {{- if eq $pt.Type "uint64" "uint32" "uint16" "uint" }}
-  {{- include (print "uint_" .MUName ".go.tmpl") .SimpleTypeVar }}
+  {{- if eq .SimpleTypeVar.Encoding "raw" }}
+    {{- include (print "uint_" .MUName "_raw.go.tmpl") .SimpleTypeVar }}
+  {{- else }}
+    {{- include (print "uint_" .MUName ".go.tmpl") .SimpleTypeVar }}
+  {{- end }}
 {{- else if eq $pt.Type "int64" "int32" "int16" "int" }}
   {{- include (print "int_" .MUName ".go.tmpl") .SimpleTypeVar }}
 {{- else if eq $pt.Type "float64" "float32" }}

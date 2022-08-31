@@ -3,8 +3,7 @@
   {{- $pt := (ParsePtrType .Type)}}
   {{- $vn := .VarName}}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
-  {{- $ct := $pt.Type}}
-  {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
+  {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
     return i, errs.ErrSmallBuf
   }

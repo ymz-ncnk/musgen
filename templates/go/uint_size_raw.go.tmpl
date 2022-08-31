@@ -1,0 +1,7 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type)}}
+  {{- $ns := NumSize $pt.Type}}
+  _ = {{.VarName}}
+  size += {{div $ns 8}}
+}

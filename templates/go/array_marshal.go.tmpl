@@ -5,6 +5,6 @@
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   for _, item := range {{$vn}} {
     {{- $at := (ParseArrayType $pt.Type) }}
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleType $at.Type .Unsafe .Suffix) "item") "marshal") }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $at.Type .Unsafe .Suffix .ElemEncoding) "item") "marshal") }}
   }
 }

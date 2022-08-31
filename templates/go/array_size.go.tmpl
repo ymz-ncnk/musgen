@@ -3,8 +3,8 @@
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $at := (ParseArrayType $pt.Type) }}
   for _, item := range {{$vn}} {
-    {{- $at := (ParseArrayType $pt.Type) }}
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleType $at.Type .Unsafe .Suffix) "item") "size") }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $at.Type .Unsafe .Suffix .ElemEncoding) "item") "size") }}
   }
 }

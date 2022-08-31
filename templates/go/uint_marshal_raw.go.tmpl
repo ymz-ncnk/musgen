@@ -1,0 +1,36 @@
+{{- /* SimpleTypeVar */ -}}
+{
+  {{- $pt := (ParsePtrType .Type)}}
+  {{- $vn := .VarName}}
+  {{- $ct := $pt.Type}}
+  {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
+  {{- $ns := NumSize $pt.Type}}
+  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if .Unsafe }}
+    *(*{{$ct}})(unsafe.Pointer(&buf[i])) = {{$vn}}
+    i += {{div $ns 8}}
+  {{- else }}
+    buf[i] = byte({{$vn}})
+    i++
+    {{- if ge $ns 16 }}
+      buf[i] = byte({{$vn}} >> 8)
+      i++
+    {{- end }}      
+    {{- if ge $ns 32 }}
+      buf[i] = byte({{$vn}} >> 16)
+      i++
+      buf[i] = byte({{$vn}} >> 24)
+      i++
+    {{- end }}  
+    {{- if eq $ns 64 }}
+      buf[i] = byte({{$vn}} >> 32)
+      i++
+      buf[i] = byte({{$vn}} >> 40)
+      i++
+      buf[i] = byte({{$vn}} >> 48)
+      i++
+      buf[i] = byte({{$vn}} >> 56)
+      i++
+    {{- end }}
+  {{- end }}
+}

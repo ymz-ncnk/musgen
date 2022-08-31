@@ -11,18 +11,21 @@ import (
 	"text/template"
 )
 
-const templatesDir = "templates/"
-const tmplsInitFileName = "tmplsinit.gen.go"
-const fdescFileName = "fdesc.musgen.go"
-const tdescFileName = "tdesc.musgen.go"
-const tmplsInit = "" +
-	"package musgen\n\n" +
-	"func init() {\n" +
-	"	tmpls = make(map[string]string)\n" +
-	"	{{- range $tmplName, $tmpl := . }}\n" +
-	"		tmpls[\"{{$tmplName}}\"] = `{{$tmpl}}`\n" +
-	"	{{- end }}\n" +
-	"}"
+const (
+	templatesDir      = "templates/"
+	tmplsInitFileName = "tmpls.gen.go"
+	fdescFileName     = "fdesc.musgen.go"
+	tdescFileName     = "tdesc.musgen.go"
+	tmplsInit         = "" +
+		"package musgen\n\n" +
+		"var tmpls map[string]string\n" +
+		"func init() {\n" +
+		"	tmpls = make(map[string]string)\n" +
+		"	{{- range $tmplName, $tmpl := . }}\n" +
+		"		tmpls[\"{{$tmplName}}\"] = `{{$tmpl}}`\n" +
+		"	{{- end }}\n" +
+		"}"
+)
 
 // Transforms files from templates/ dir to map[string]string
 // representation, where a key is a filename, a value is a file's content.
@@ -40,7 +43,7 @@ func genTmpls() error {
 		return err
 	}
 	var bs []byte
-	bs, err = makeTmplsInit(data)
+	bs, err = makeTmplsInitFile(data)
 	if err != nil {
 		return err
 	}
@@ -79,7 +82,7 @@ func makeTmplsInitData() (map[string]string, error) {
 	return data, nil
 }
 
-func makeTmplsInit(data map[string]string) ([]byte, error) {
+func makeTmplsInitFile(data map[string]string) ([]byte, error) {
 	t := template.New("base")
 	t.Parse(tmplsInit)
 	buf := bytes.NewBuffer(make([]byte, 0))

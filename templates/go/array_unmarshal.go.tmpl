@@ -3,15 +3,14 @@
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
-  {{- $al := (ParseArrayType $pt.Type).Length}}
-  {{- $at := (ParseArrayType $pt.Type).Type}}
+  {{- $at := (ParseArrayType $pt.Type)}}
   {{- $index := ArrayIndex .VarName}}
-  for {{$index}} := 0; {{$index}} < {{$al}}; {{$index}}++ {
+  for {{$index}} := 0; {{$index}} < {{$at.Length}}; {{$index}}++ {
     {{- $elvn := (print $vn "[" $index "]") }}
-    {{- if (ParsePtrType $at).Valid }}
-      {{- include "initptrvar.go.tmpl" (MakeVar $elvn $at false) }}
+    {{- if (ParsePtrType $at.Type).Valid }}
+      {{- include "initptrvar.go.tmpl" (MakeVar $elvn $at.Type false) }}
     {{- end }}
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $at .ElemValidator 0 .Unsafe .Suffix) $elvn) "unmarshal") }}
+    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $at.Type .ElemValidator 0 .Unsafe .Suffix .ElemEncoding) $elvn) "unmarshal") }}
     if err != nil {
       err = errs.NewArrayError({{$index}}, err)
       break
