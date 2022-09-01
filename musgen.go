@@ -170,6 +170,6 @@ func (gen MusGen) supportEncoding(t string, encoding string) bool {
 }
 
 func (gen MusGen) supportRawEncoding(t string) bool {
-	re := regexp.MustCompile(`^\**(?:uint|int)(?:64|32|16|8|)$`)
+	re := regexp.MustCompile(`^\**(?:(?:uint|int)(?:64|32|16|8|)|float(?:64|32))$`)
 	return re.MatchString(t)
 }

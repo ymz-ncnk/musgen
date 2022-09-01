@@ -43,17 +43,33 @@ func TestGoLangRawEncoding(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	td := TypeDesc{
-		Package: "musgen",
-		Name:    "Uint64RawAlias",
-		Fields: []FieldDesc{{Type: "uint64", Alias: "Uint64RawAlias",
-			Encoding: "raw"}},
-		Unsafe: true,
-		Suffix: "MUS",
+	{
+		td := TypeDesc{
+			Package: "musgen",
+			Name:    "Uint64RawAlias",
+			Fields: []FieldDesc{{Type: "uint64", Alias: "Uint64RawAlias",
+				Encoding: "raw"}},
+			Unsafe: true,
+			Suffix: "MUS",
+		}
+		_, err = musGen.Generate(td, GoLang)
+		if err != nil {
+			t.Error(err)
+		}
 	}
-	_, err = musGen.Generate(td, GoLang)
-	if err != nil {
-		t.Error(err)
+	{
+		td := TypeDesc{
+			Package: "musgen",
+			Name:    "Float32RawAlias",
+			Fields: []FieldDesc{{Type: "float32", Alias: "Float32RawAlias",
+				Encoding: "raw"}},
+			Unsafe: true,
+			Suffix: "MUS",
+		}
+		_, err = musGen.Generate(td, GoLang)
+		if err != nil {
+			t.Error(err)
+		}
 	}
 }
 

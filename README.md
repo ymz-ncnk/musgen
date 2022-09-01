@@ -39,9 +39,10 @@ Marshal/Unmarshal process.
 ## Features
 - Fields are encoded/decoded by order, so there are no fields' names, only 
   fields' values.
-- Varint encoding is a default encoding for intergers and floats. Also for
-  intergers you may specify Raw encoding.
-- Binary representation of the float is turned over before transformation.
+- Varint encoding is a default encoding for intergers and floats. Also you may 
+  specify Raw encoding for this types.
+- Binary representation of the float(Varint) is turned over before 
+  transformation.
 - ZigZag encoding is used for signed to unsigned integer mapping.
 - Strings, lists, arrays, and maps are encoded with length (int type) and 
   keys/values.

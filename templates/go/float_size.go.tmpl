@@ -4,14 +4,19 @@
   {{- $vn := .VarName}}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}
-  uv := math.Float{{(NumSize .Type)}}bits(float{{(NumSize .Type)}}({{$vn}}))
-  {{- if eq (NumSize .Type) 64 }}
-    uv = (uv << 32) | (uv >> 32)
-    uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)
-    uv = ((uv << 8) & 0xFF00FF00FF00FF00) | ((uv >> 8) & 0x00FF00FF00FF00FF)
-  {{- else if eq (NumSize .Type) 32 }}
-    uv = (uv << 16) | (uv >> 16)
-    uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
+  {{- if eq .Encoding "raw" }}
+    {{ include "uint_size_raw.go.tmpl" (SetUpVarName (MakeSimpleType  $uvt .Unsafe .Suffix) $vn) }}
+  {{- else }}
+    uv := math.Float{{(NumSize .Type)}}bits(float{{(NumSize .Type)}}({{$vn}}))
+    {{- if eq (NumSize .Type) 64 }}
+      uv = (uv << 32) | (uv >> 32)
+      uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)
+      uv = ((uv << 8) & 0xFF00FF00FF00FF00) | ((uv >> 8) & 0x00FF00FF00FF00FF)
+    {{- else if eq (NumSize .Type) 32 }}
+      uv = (uv << 16) | (uv >> 16)
+      uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
+    {{- end }}
+    {{ include "uint_size.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
   {{- end }}
-  {{ include "uint_size.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
+
 }

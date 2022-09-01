@@ -174,15 +174,19 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}
   uv := math.Float{{(NumSize .Type)}}bits(float{{(NumSize .Type)}}({{$vn}}))
-  {{- if eq (NumSize .Type) 64 }}
-    uv = (uv << 32) | (uv >> 32)
-    uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)
-    uv = ((uv << 8) & 0xFF00FF00FF00FF00) | ((uv >> 8) & 0x00FF00FF00FF00FF)
-  {{- else if eq (NumSize .Type) 32 }}
-    uv = (uv << 16) | (uv >> 16)
-    uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
+  {{- if eq .Encoding "raw" }}
+    {{ include "uint_marshal_raw.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
+  {{- else }}
+    {{- if eq (NumSize .Type) 64 }}
+      uv = (uv << 32) | (uv >> 32)
+      uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)
+      uv = ((uv << 8) & 0xFF00FF00FF00FF00) | ((uv >> 8) & 0x00FF00FF00FF00FF)
+    {{- else if eq (NumSize .Type) 32 }}
+      uv = (uv << 16) | (uv >> 16)
+      uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
+    {{- end }}
+    {{ include "uint_marshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
   {{- end }}
-  {{ include "uint_marshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
 }`
 	tmpls["float_size.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
@@ -190,16 +194,21 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- $vn := .VarName}}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}
-  uv := math.Float{{(NumSize .Type)}}bits(float{{(NumSize .Type)}}({{$vn}}))
-  {{- if eq (NumSize .Type) 64 }}
-    uv = (uv << 32) | (uv >> 32)
-    uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)
-    uv = ((uv << 8) & 0xFF00FF00FF00FF00) | ((uv >> 8) & 0x00FF00FF00FF00FF)
-  {{- else if eq (NumSize .Type) 32 }}
-    uv = (uv << 16) | (uv >> 16)
-    uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
+  {{- if eq .Encoding "raw" }}
+    {{ include "uint_size_raw.go.tmpl" (SetUpVarName (MakeSimpleType  $uvt .Unsafe .Suffix) $vn) }}
+  {{- else }}
+    uv := math.Float{{(NumSize .Type)}}bits(float{{(NumSize .Type)}}({{$vn}}))
+    {{- if eq (NumSize .Type) 64 }}
+      uv = (uv << 32) | (uv >> 32)
+      uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)
+      uv = ((uv << 8) & 0xFF00FF00FF00FF00) | ((uv >> 8) & 0x00FF00FF00FF00FF)
+    {{- else if eq (NumSize .Type) 32 }}
+      uv = (uv << 16) | (uv >> 16)
+      uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
+    {{- end }}
+    {{ include "uint_size.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
   {{- end }}
-  {{ include "uint_size.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
+
 }`
 	tmpls["float_unmarshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
@@ -210,14 +219,18 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}
   var uv {{$uvt}}
-  {{ include "uint_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
-  {{- if eq (NumSize .Type) 64 }}
-    uv = (uv << 32) | (uv >> 32)
-    uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)
-    uv = ((uv << 8) & 0xFF00FF00FF00FF00) | ((uv >> 8) & 0x00FF00FF00FF00FF)
-  {{- else if eq (NumSize .Type) 32 }}
-    uv = (uv << 16) | (uv >> 16)
-    uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
+  {{- if eq .Encoding "raw" }}
+    {{ include "uint_unmarshal_raw.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
+  {{- else }}
+    {{ include "uint_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
+    {{- if eq (NumSize .Type) 64 }}
+      uv = (uv << 32) | (uv >> 32)
+      uv = ((uv << 16) & 0xFFFF0000FFFF0000) | ((uv >> 16) & 0x0000FFFF0000FFFF)
+      uv = ((uv << 8) & 0xFF00FF00FF00FF00) | ((uv >> 8) & 0x00FF00FF00FF00FF)
+    {{- else if eq (NumSize .Type) 32 }}
+      uv = (uv << 16) | (uv >> 16)
+      uv = ((uv << 8) & 0xFF00FF00) | ((uv >> 8) & 0x00FF00FF)
+    {{- end }}
   {{- end }}
   {{$vn}} = {{$ct}}(math.Float{{(NumSize .Type)}}frombits(uv))
   {{- include "validator.go.tmpl" . -}}
@@ -266,7 +279,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- if eq .Encoding "raw" }}
-    {{ include "uint_size_raw.go.tmpl" (SetUpVarName (MakeSimpleTypeWithAlias .Alias $pt.Type .Unsafe .Suffix) $vn) }}
+    {{ include "uint_size_raw.go.tmpl" (SetUpVarName (MakeSimpleType  $pt.Type .Unsafe .Suffix) $vn) }}
   {{- else }}
     {{- $uvt := print "uint" (NumSize .Type) }}
     uv := {{$uvt}}({{$vn}}<<1) ^ {{$uvt}}({{$vn}}>>{{IntShift .Type}})
