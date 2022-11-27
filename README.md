@@ -39,8 +39,7 @@ Marshal/Unmarshal process.
 ## Features
 - Fields are encoded/decoded by order, so there are no fields' names, only 
   fields' values.
-- Varint encoding is a default encoding for intergers and floats. Also you may 
-  specify Raw encoding for this types.
+- Integers and floats support two kind of encodings - Varint(default) and Raw.  
 - Binary representation of the float(Varint) is turned over before 
   transformation.
 - ZigZag encoding is used for signed to unsigned integer mapping.
@@ -74,14 +73,15 @@ TypeV2 {
 }
 
 // Check version field before Unmarshal.
-if buff[0] == 1 {
-  _, err = typeV1.Unmarshal(buff)
-  ...
-} else if buff[0] == 2 {
-  _, err = typeV2.Unmarshal(buff)
-  ...
-} else {
-  return ErrUnsupportedVersion
+switch buf[0] {
+  case 1:
+      _, err = typeV1.Unmarshal(buff)
+    ...
+  case 2:
+    _, err = typeV2.Unmarshal(buff)
+    ...  
+  default:
+    return ErrUnsupportedVersion
 }
 ```
 
