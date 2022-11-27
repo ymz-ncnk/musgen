@@ -482,6 +482,9 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   length := len({{$vn}})
   {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
+  if len(buf[i:]) < length {
+    panic(errs.ErrSmallBuf)
+  }
   i += copy(buf[i:], {{$vn}})
 }`
 	tmpls["string_size.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
