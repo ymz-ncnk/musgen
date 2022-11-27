@@ -4,6 +4,9 @@ import (
 	"testing"
 )
 
+// All tests of the generated code, produced by musgen, you can find in
+// mus`lang`(like musgo) projects.
+
 func TestGoLangAliasMusGen(t *testing.T) {
 	musGen, err := New()
 	if err != nil {
