@@ -396,13 +396,13 @@ func defMaxLength(t string) int {
 	t = re.ReplaceAllString(t, "")
 	switch t {
 	case "uint64", "int64":
-		return MaxZigZagLength64
+		return MaxVarintLength64
 	case "uint32", "int32":
-		return MaxZigZagLength32
+		return MaxVarintLength32
 	case "uint16", "int16":
-		return MaxZigZagLength16
+		return MaxVarintLength16
 	case "uint8", "int8":
-		return MaxZigZagLength8
+		return MaxVarintLength8
 	case "uint", "int":
 		return defMaxLength(UintWithSystemSize)
 	}

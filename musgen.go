@@ -16,10 +16,10 @@ import (
 var UintWithSystemSize = "uint" + strconv.Itoa(strconv.IntSize)
 
 const (
-	MaxZigZagLength64 = 10
-	MaxZigZagLength32 = 5
-	MaxZigZagLength16 = 3
-	MaxZigZagLength8  = 1
+	MaxVarintLength64 = 10
+	MaxVarintLength32 = 5
+	MaxVarintLength16 = 3
+	MaxVarintLength8  = 1
 	RawEncoding       = "raw"
 )
 
