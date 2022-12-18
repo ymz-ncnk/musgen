@@ -39,12 +39,10 @@ Marshal/Unmarshal process.
 ## Features
 - Fields are encoded/decoded by order, so there are no fields' names, only 
   fields' values.
-- Integers and floats support two kind of encodings - Varint(default) and Raw.  
-- Binary representation of the float(Varint) is turned over before 
+- Integers and floats support two kind of encodings - Varint (default) and Raw.  
+- Binary representation of the float (Varint) is turned over before 
   transformation.
 - ZigZag encoding is used for signed to unsigned integer mapping.
-- Strings, lists, arrays, and maps are encoded with length (int type) and 
-  keys/values.
 - Strings, lists, arrays are encoded with length (int type) and values, maps -
   with length and key/value pairs.
 - Booleans and bytes are encoded by a single byte.
