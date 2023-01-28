@@ -586,7 +586,10 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 {
   {{- $pt := (ParsePtrType .Type)}}
   {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}
+		tmp := {{print "(" $pt.Stars .VarName ")"}}
+		{{- $vn = "tmp"}}
+	{{- end }}	
   for {{$vn}} >= 0x80 {
     buf[i] = byte({{$vn}}) | 0x80
     {{$vn}} >>= 7
@@ -635,7 +638,10 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 {
   {{- $pt := (ParsePtrType .Type)}}
   {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}
+		tmp := {{print "(" $pt.Stars .VarName ")"}}
+		{{- $vn = "tmp"}}
+	{{- end }}
   for {{$vn}} >= 0x80 {
     {{$vn}} >>= 7
     size++
