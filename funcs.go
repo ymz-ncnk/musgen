@@ -258,57 +258,6 @@ func MakeSimplePtrTypeFromField(f FieldDesc, unsafe bool,
 	return MakeSimpleTypeFromField(f, unsafe, suffix)
 }
 
-// IncludeFunc creates template's include func.
-func IncludeFunc(tmpl *template.Template) func(string, interface{}) (string,
-	error) {
-	return func(name string, pipeline interface{}) (string, error) {
-		var buf bytes.Buffer
-		if err := tmpl.ExecuteTemplate(&buf, name, pipeline); err != nil {
-			return "", err
-		}
-		return buf.String(), nil
-	}
-}
-
-// IterateFunc creates template's iterate func.
-func IterateFunc() func(int) []int {
-	return func(count int) []int {
-		var items []int
-		for i := 0; i < (count); i++ {
-			items = append(items, i)
-		}
-		return items
-	}
-}
-
-// AddFunc creates template's add func.
-func AddFunc() func(int, int) int {
-	return func(a int, b int) int {
-		return a + b
-	}
-}
-
-// MinusFunc creates template's minus func.
-func MinusFunc() func(int, int) int {
-	return func(a int, b int) int {
-		return a - b
-	}
-}
-
-// DivFunc creates template's div func.
-func DivFunc() func(int, int) int {
-	return func(a int, b int) int {
-		return a / b
-	}
-}
-
-// ReplaceFunc creates template's replace func.
-func ReplaceFunc() func(string, string, string, int) string {
-	return func(s string, old string, new string, n int) string {
-		return strings.Replace(s, old, new, n)
-	}
-}
-
 // NumSize is a template function. Returns a size of the number type.
 // For int32 returns 32, for uint8 returns 8, and so on, for int returns the
 // system size.
@@ -378,6 +327,57 @@ func MakeVar(name string, t string, init bool) struct {
 		Name: name,
 		Type: t,
 		Init: init,
+	}
+}
+
+// MakeIncludeFunc creates template's include func.
+func MakeIncludeFunc(tmpl *template.Template) func(string, interface{}) (string,
+	error) {
+	return func(name string, pipeline interface{}) (string, error) {
+		var buf bytes.Buffer
+		if err := tmpl.ExecuteTemplate(&buf, name, pipeline); err != nil {
+			return "", err
+		}
+		return buf.String(), nil
+	}
+}
+
+// MakeIterateFunc creates template's iterate func.
+func MakeIterateFunc() func(int) []int {
+	return func(count int) []int {
+		var items []int
+		for i := 0; i < (count); i++ {
+			items = append(items, i)
+		}
+		return items
+	}
+}
+
+// MakeAddFunc creates template's add func.
+func MakeAddFunc() func(int, int) int {
+	return func(a int, b int) int {
+		return a + b
+	}
+}
+
+// MakeMinusFunc creates template's minus func.
+func MakeMinusFunc() func(int, int) int {
+	return func(a int, b int) int {
+		return a - b
+	}
+}
+
+// MakeDivFunc creates template's div func.
+func MakeDivFunc() func(int, int) int {
+	return func(a int, b int) int {
+		return a / b
+	}
+}
+
+// MakeReplaceFunc creates template's replace func.
+func MakeReplaceFunc() func(string, string, string, int) string {
+	return func(s string, old string, new string, n int) string {
+		return strings.Replace(s, old, new, n)
 	}
 }
 

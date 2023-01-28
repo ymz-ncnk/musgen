@@ -1,4 +1,4 @@
-// +build ignore
+//go:build ignore
 
 package main
 
@@ -12,17 +12,15 @@ import (
 )
 
 const (
-	templatesDir      = "templates/"
-	tmplsInitFileName = "tmpls.gen.go"
-	fdescFileName     = "fdesc.musgen.go"
-	tdescFileName     = "tdesc.musgen.go"
-	tmplsInit         = "" +
+	templatesDir           = "templates/"
+	templatesVarFileName   = "templates_var.gen.go"
+	templatesVarFileSample = "" +
 		"package musgen\n\n" +
-		"var tmpls map[string]string\n" +
+		"var templates map[string]string\n" +
 		"func init() {\n" +
-		"	tmpls = make(map[string]string)\n" +
+		"	templates = make(map[string]string)\n" +
 		"	{{- range $tmplName, $tmpl := . }}\n" +
-		"		tmpls[\"{{$tmplName}}\"] = `{{$tmpl}}`\n" +
+		"		templates[\"{{$tmplName}}\"] = `{{$tmpl}}`\n" +
 		"	{{- end }}\n" +
 		"}"
 )
@@ -31,37 +29,39 @@ const (
 // representation, where a key is a filename, a value is a file's content.
 // Generates tmplsinit.gen.go.
 func main() {
-	err := genTmpls()
+	err := genTemplatesVarFile()
 	if err != nil {
 		panic(err)
 	}
 }
 
-func genTmpls() error {
-	data, err := makeTmplsInitData()
+func genTemplatesVarFile() error {
+	m, err := makeTemplatesVar()
 	if err != nil {
 		return err
 	}
 	var bs []byte
-	bs, err = makeTmplsInitFile(data)
+	bs, err = makeTemplatesVarFile(m)
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(tmplsInitFileName, bs, os.ModePerm)
+	err = ioutil.WriteFile(templatesVarFileName, bs, os.ModePerm)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func makeTmplsInitData() (map[string]string, error) {
-	data := make(map[string]string)
+func makeTemplatesVar() (map[string]string, error) {
+	m := make(map[string]string)
 	dirs, err := ioutil.ReadDir(templatesDir)
 	if err != nil {
 		return nil, err
 	}
-	var fs []os.FileInfo
-	var content []byte
+	var (
+		fs      []os.FileInfo
+		content []byte
+	)
 	for i := 0; i < len(dirs); i++ {
 		if !dirs[i].IsDir() {
 			return nil, fmt.Errorf("found not dir file %v", dirs[i].Name())
@@ -76,15 +76,15 @@ func makeTmplsInitData() (map[string]string, error) {
 			if err != nil {
 				return nil, err
 			}
-			data[string(fs[j].Name())] = string(content)
+			m[string(fs[j].Name())] = string(content)
 		}
 	}
-	return data, nil
+	return m, nil
 }
 
-func makeTmplsInitFile(data map[string]string) ([]byte, error) {
+func makeTemplatesVarFile(data map[string]string) ([]byte, error) {
 	t := template.New("base")
-	t.Parse(tmplsInit)
+	t.Parse(templatesVarFileSample)
 	buf := bytes.NewBuffer(make([]byte, 0))
 	err := t.ExecuteTemplate(buf, "base", data)
 	if err != nil {

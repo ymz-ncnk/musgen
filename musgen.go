@@ -1,18 +1,18 @@
-//go:generate go run metagen/metagen.go
+//go:generate go run metagen/templates_var.go
 package musgen
 
 import (
 	"bytes"
-	"fmt"
 	"regexp"
 	"strconv"
-	"text/template"
+	tmplmod "text/template"
 )
 
-// Two main templates are alias.go.tmpl and struct.go.tmpl.
-// After changing a template run '$ go generate'.
+// Two main templates are templates/alias.go.tmpl and templates/struct.go.tmpl.
+// After any changes in one of the template file from templates/ directory, you
+// should run '$ go generate'.
 
-// UintWithSystemSize system uint type with size.
+// UintWithSystemSize uint type with system size.
 var UintWithSystemSize = "uint" + strconv.Itoa(strconv.IntSize)
 
 const (
@@ -25,50 +25,18 @@ const (
 
 // New returns a new MusGen.
 func New() (MusGen, error) {
-	t := template.New("base")
-	funcs := make(template.FuncMap)
-	funcs["SetUpVarName"] = SetUpVarName
-	funcs["ParseMapType"] = ParseMapType
-	funcs["ClearMapType"] = ClearMapType
-	funcs["ParseArrayType"] = ParseArrayType
-	funcs["ParseSliceType"] = ParseSliceType
-	funcs["ParsePtrType"] = ParsePtrType
-	funcs["MakeSimpleType"] = MakeSimpleType
-	funcs["MakeSimpleTypeWithAlias"] = MakeSimpleTypeWithAlias
-	funcs["MakeSimpleTypeWithEncoding"] = MakeSimpleTypeWithEncoding
-	funcs["MakeValidSimpleType"] = MakeValidSimpleType
-	funcs["MakeSimpleTypeFromField"] = MakeSimpleTypeFromField
-	funcs["MakeSimplePtrTypeFromField"] = MakeSimplePtrTypeFromField
-	funcs["MakeTmplData"] = MakeTmplData
-	funcs["NumSize"] = NumSize
-	funcs["IntShift"] = IntShift
-	funcs["ArrayIndex"] = ArrayIndex
-	funcs["MapKeyVarName"] = MapKeyVarName
-	funcs["MapValueVarName"] = MapValueVarName
-	funcs["MakeVar"] = MakeVar
-	funcs["MaxLastByte"] = MaxLastByte
-	funcs["include"] = IncludeFunc(t)
-	funcs["iterate"] = IterateFunc()
-	funcs["add"] = AddFunc()
-	funcs["minus"] = MinusFunc()
-	funcs["div"] = DivFunc()
-	funcs["replace"] = ReplaceFunc()
-	t.Funcs(funcs)
-	var tl *template.Template
-	var err error
-	for tmplName, tmpl := range tmpls {
-		tl = t.New(tmplName)
-		_, err = tl.Parse(tmpl)
-		if err != nil {
-			return MusGen{}, err
-		}
+	baseTmpl := tmplmod.New("base")
+	registerFuncs(baseTmpl)
+	err := registerTemplates(baseTmpl)
+	if err != nil {
+		return MusGen{}, err
 	}
-	return MusGen{t}, err
+	return MusGen{baseTmpl}, err
 }
 
 // MusGen is a code generator for the MUS format.
 type MusGen struct {
-	t *template.Template
+	baseTmpl *tmplmod.Template
 }
 
 // Generate generates a code for the specified language.
@@ -80,17 +48,17 @@ func (gen MusGen) Generate(td TypeDesc, lang Lang) ([]byte, error) {
 	switch lang {
 	case GoLang:
 		if Alias(td) {
-			return gen.generate(td, "alias."+lang.String()+".tmpl")
+			return gen.generate(td, makeAliasFileName(lang))
 		}
-		return gen.generate(td, "struct."+lang.String()+".tmpl")
+		return gen.generate(td, makeStructFileName(lang))
 	default:
-		return nil, fmt.Errorf("unsuported lang %v", lang.String())
+		return nil, UnsupportedLangError{lang}
 	}
 }
 
 func (gen MusGen) generate(td TypeDesc, tmplFile string) ([]byte, error) {
 	buf := bytes.NewBuffer(make([]byte, 0))
-	err := gen.t.ExecuteTemplate(buf, tmplFile, td)
+	err := gen.baseTmpl.ExecuteTemplate(buf, tmplFile, td)
 	if err != nil {
 		return nil, err
 	}
@@ -162,14 +130,65 @@ func (gen MusGen) validateKeyEncoding(fieldType, encoding string) error {
 	return nil
 }
 
-func (gen MusGen) supportEncoding(t string, encoding string) bool {
-	if encoding == RawEncoding && gen.supportRawEncoding(t) {
+func (gen MusGen) supportEncoding(baseTmpl string, encoding string) bool {
+	if encoding == RawEncoding && gen.supportRawEncoding(baseTmpl) {
 		return true
 	}
 	return false
 }
 
-func (gen MusGen) supportRawEncoding(t string) bool {
+func (gen MusGen) supportRawEncoding(baseTmpl string) bool {
 	re := regexp.MustCompile(`^\**(?:(?:uint|int)(?:64|32|16|8|)|float(?:64|32))$`)
-	return re.MatchString(t)
+	return re.MatchString(baseTmpl)
+}
+
+func registerFuncs(tmpl *tmplmod.Template) {
+	tmpl.Funcs(map[string]any{
+		"SetUpVarName":               SetUpVarName,
+		"ParseMapType":               ParseMapType,
+		"ClearMapType":               ClearMapType,
+		"ParseArrayType":             ParseArrayType,
+		"ParseSliceType":             ParseSliceType,
+		"ParsePtrType":               ParsePtrType,
+		"MakeSimpleType":             MakeSimpleType,
+		"MakeSimpleTypeWithAlias":    MakeSimpleTypeWithAlias,
+		"MakeSimpleTypeWithEncoding": MakeSimpleTypeWithEncoding,
+		"MakeValidSimpleType":        MakeValidSimpleType,
+		"MakeSimpleTypeFromField":    MakeSimpleTypeFromField,
+		"MakeSimplePtrTypeFromField": MakeSimplePtrTypeFromField,
+		"MakeTmplData":               MakeTmplData,
+		"NumSize":                    NumSize,
+		"IntShift":                   IntShift,
+		"ArrayIndex":                 ArrayIndex,
+		"MapKeyVarName":              MapKeyVarName,
+		"MapValueVarName":            MapValueVarName,
+		"MakeVar":                    MakeVar,
+		"MaxLastByte":                MaxLastByte,
+		"include":                    MakeIncludeFunc(tmpl),
+		"iterate":                    MakeIterateFunc(),
+		"add":                        MakeAddFunc(),
+		"minus":                      MakeMinusFunc(),
+		"div":                        MakeDivFunc(),
+		"replace":                    MakeReplaceFunc(),
+	})
+}
+
+func registerTemplates(tmpl *tmplmod.Template) (err error) {
+	var childTmpl *tmplmod.Template
+	for name, template := range templates {
+		childTmpl = tmpl.New(name)
+		_, err = childTmpl.Parse(template)
+		if err != nil {
+			return
+		}
+	}
+	return nil
+}
+
+func makeAliasFileName(lang Lang) string {
+	return "alias." + lang.String() + ".tmpl"
+}
+
+func makeStructFileName(lang Lang) string {
+	return "struct." + lang.String() + ".tmpl"
 }
