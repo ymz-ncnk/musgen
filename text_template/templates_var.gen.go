@@ -1,4 +1,4 @@
-package musgen
+package text_template
 
 var templates map[string]string
 
@@ -210,7 +210,6 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
     {{- end }}
     {{ include "uint_size.go.tmpl" (SetUpVarName (MakeSimpleType $uvt .Unsafe .Suffix) "uv") }}
   {{- end }}
-
 }`
 	templates["float_unmarshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {

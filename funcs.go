@@ -8,6 +8,17 @@ import (
 	"text/template"
 )
 
+// UintWithSystemSize uint type with system size.
+var UintWithSystemSize = "uint" + strconv.Itoa(strconv.IntSize)
+
+// Limits for varint encoding.
+const (
+	MaxVarintLength64 = 10
+	MaxVarintLength32 = 5
+	MaxVarintLength16 = 3
+	MaxVarintLength8  = 1
+)
+
 // SimpleTypeVar pipeline for the simpletypes.go.tmpl.
 type SimpleTypeVar struct {
 	SimpleType

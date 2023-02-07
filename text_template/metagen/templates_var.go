@@ -15,7 +15,7 @@ const (
 	templatesDir           = "templates/"
 	templatesVarFileName   = "templates_var.gen.go"
 	templatesVarFileSample = "" +
-		"package musgen\n\n" +
+		"package text_template\n\n" +
 		"var templates map[string]string\n" +
 		"func init() {\n" +
 		"	templates = make(map[string]string)\n" +

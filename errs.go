@@ -2,21 +2,21 @@ package musgen
 
 import (
 	"errors"
-	"fmt"
 )
 
+// ErrUnsupportedEncoding happens when MusGen tries to generate code for a
+// field description with unsupported encoding.
 var ErrUnsupportedEncoding = errors.New("unsupported encoding")
+
+// ErrUnsupportedElemEncoding happens when MusGen tries to generate code for a 
+// field description with unsupported elem encoding.
 var ErrUnsupportedElemEncoding = errors.New("unsupported elem encoding")
+
+// ErrUnsupportedKeyEncoding happens when MusGen tries to generate code for a 
+// field description with unsupported key encoding.
 var ErrUnsupportedKeyEncoding = errors.New("unsupported key encoding")
 
-type UnsupportedLangError struct {
-	lang Lang
-}
+// ErrUnsupportedLand happens when MusGen tries to generate code for unsupported
+// language.
+var ErrUnsupportedLang = errors.New("unsupported lang")
 
-func (err UnsupportedLangError) Lang() Lang {
-	return err.lang
-}
-
-func (err UnsupportedLangError) Error() string {
-	return fmt.Sprintf("unsupported lang %s", err.lang.String())
-}
