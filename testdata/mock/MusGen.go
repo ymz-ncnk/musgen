@@ -5,21 +5,21 @@ import (
 	"github.com/ymz-ncnk/musgen"
 )
 
-func NewMusGenMock() MusGenMock{
-	return MusGenMock{amock.New("MusGen")}
+func NewMusGen() MusGen {
+	return MusGen{amock.New("MusGen")}
 }
 
-type MusGenMock struct {
+type MusGen struct {
 	*amock.Mock
 }
 
-func (musGen MusGenMock) RegisterGenerate(fn func(td musgen.TypeDesc, 
-	lang musgen.Lang) ([]byte, error)) MusGenMock {
+func (musGen MusGen) RegisterGenerate(fn func(td musgen.TypeDesc,
+	lang musgen.Lang) ([]byte, error)) MusGen {
 	musGen.Register("Generate", fn)
 	return musGen
 }
 
-func (musGen MusGenMock) Generate(td musgen.TypeDesc, lang musgen.Lang) (
+func (musGen MusGen) Generate(td musgen.TypeDesc, lang musgen.Lang) (
 	data []byte, err error) {
 	vals, err := musGen.Call("Generate", td, lang)
 	if err != nil {
