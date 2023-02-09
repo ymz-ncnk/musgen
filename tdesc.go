@@ -14,12 +14,12 @@ type TypeDesc struct {
 type FieldDesc struct {
 	Name          string
 	Type          string
-	MaxLength     int
 	Alias         string
 	Validator     string
 	Encoding      string
-	KeyValidator  string
-	KeyEncoding   string
+	MaxLength     int
 	ElemValidator string
 	ElemEncoding  string
+	KeyValidator  string
+	KeyEncoding   string
 }
