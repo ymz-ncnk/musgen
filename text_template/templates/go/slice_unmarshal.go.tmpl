@@ -2,7 +2,7 @@
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $st := (ParseSliceType $pt.Type).Type}}
   {{- $index := ArrayIndex .VarName}}
   var length int

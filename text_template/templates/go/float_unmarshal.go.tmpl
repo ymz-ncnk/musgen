@@ -1,8 +1,8 @@
 {{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}

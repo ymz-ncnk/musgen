@@ -1,8 +1,8 @@
 {{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   length := len({{$vn}})
   {{ include "int_size.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   {{- $mt := (ParseMapType $pt.Type) }}

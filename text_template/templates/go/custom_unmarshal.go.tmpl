@@ -2,7 +2,7 @@
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   var sv {{$pt.Type}}
   si := 0
   si, err = sv.Unmarshal{{.Suffix}}(buf[i:])

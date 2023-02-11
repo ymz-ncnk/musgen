@@ -1,11 +1,11 @@
 {{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
+  {{- $vn := .VarName }}
   {{- $ct := $pt.Type}}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- $ns := NumSize $pt.Type}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- if .Unsafe }}
     *(*{{$ct}})(unsafe.Pointer(&buf[i])) = {{$vn}}
     i += {{div $ns 8}}

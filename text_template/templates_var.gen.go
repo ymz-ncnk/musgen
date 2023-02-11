@@ -34,7 +34,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   for _, item := range {{$vn}} {
     {{- $at := (ParseArrayType $pt.Type) }}
     {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $at.Type .Unsafe .Suffix .ElemEncoding) "item") "marshal") }}
@@ -44,7 +44,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $at := (ParseArrayType $pt.Type) }}
   for _, item := range {{$vn}} {
     {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $at.Type .Unsafe .Suffix .ElemEncoding) "item") "size") }}
@@ -54,7 +54,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $at := (ParseArrayType $pt.Type)}}
   {{- $index := ArrayIndex .VarName}}
   for {{$index}} := 0; {{$index}} < {{$at.Length}}; {{$index}}++ {
@@ -72,8 +72,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["bool_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   if {{$vn}} {
     buf[i] = 0x01
   } else {
@@ -90,8 +90,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["bool_unmarshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   if i > len(buf) - 1 {
     return i, errs.ErrSmallBuf
   }
@@ -108,8 +108,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["byte_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   buf[i] = byte({{$vn}})
   i++
 }`
@@ -121,8 +121,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["byte_unmarshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
@@ -134,16 +134,16 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["custom_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type) }}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   si := {{$vn}}.Marshal{{.Suffix}}(buf[i:])
   i += si
 }`
 	templates["custom_size.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type) }}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   ss := {{$vn}}.Size{{.Suffix}}()
   size += ss
 }`
@@ -151,7 +151,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   var sv {{$pt.Type}}
   si := 0
   si, err = sv.Unmarshal{{.Suffix}}(buf[i:])
@@ -163,8 +163,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["float_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}
   uv := math.Float{{(NumSize .Type)}}bits(float{{(NumSize .Type)}}({{$vn}}))
   {{- if eq .Encoding "raw" }}
@@ -184,8 +184,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["float_size.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}
   {{- if eq .Encoding "raw" }}
     {{ include "uint_size_raw.go.tmpl" (SetUpVarName (MakeSimpleType  $uvt .Unsafe .Suffix) $vn) }}
@@ -205,8 +205,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["float_unmarshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- $uvt := print "uint" (NumSize .Type) }}
@@ -247,8 +247,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["int_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- if eq .Encoding "raw" }}
     {{ include "uint_marshal_raw.go.tmpl" (SetUpVarName (MakeSimpleTypeWithAlias .Alias $pt.Type .Unsafe .Suffix) $vn) }}
@@ -266,8 +266,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["int_size.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- if eq .Encoding "raw" }}
     {{ include "uint_size_raw.go.tmpl" (SetUpVarName (MakeSimpleType  $pt.Type .Unsafe .Suffix) $vn) }}
@@ -281,7 +281,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}{{if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- if eq .Encoding "raw" }}
     {{ include "uint_unmarshal_raw.go.tmpl" (SetUpVarName (MakeSimpleTypeWithAlias .Alias $pt.Type .Unsafe .Suffix) $vn) }}
@@ -300,8 +300,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["map_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   length := len({{$vn}})
   {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   for ke, vl := range {{$vn}} {
@@ -313,8 +313,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["map_size.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   length := len({{$vn}})
   {{ include "int_size.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   {{- $mt := (ParseMapType $pt.Type) }}
@@ -326,8 +326,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["map_unmarshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   var length int
   {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
@@ -441,7 +441,7 @@ if buf[i] == 0 {
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   length := len({{$vn}})
   {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   for _, el := range {{$vn}} {
@@ -453,7 +453,7 @@ if buf[i] == 0 {
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   length := len({{$vn}})
   {{ include "int_size.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   for _, el := range {{$vn}} {
@@ -465,7 +465,7 @@ if buf[i] == 0 {
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $st := (ParseSliceType $pt.Type).Type}}
   {{- $index := ArrayIndex .VarName}}
   var length int
@@ -497,8 +497,8 @@ if buf[i] == 0 {
 	templates["string_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   length := len({{$vn}})
   {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if len(buf[i:]) < length {
@@ -509,8 +509,8 @@ if buf[i] == 0 {
 	templates["string_size.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   length := len({{$vn}})
   {{ include "int_size.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   size += len({{$vn}})
@@ -519,7 +519,7 @@ if buf[i] == 0 {
 {
   {{- $pt := (ParsePtrType .Type) }}
   {{- $vn := .VarName }}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type }}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   var length int
@@ -603,7 +603,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["uint_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
+  {{- $vn := .VarName }}
   {{- if $pt.Valid }}
 		tmp := {{print "(" $pt.Stars .VarName ")"}}
 		{{- $vn = "tmp"}}
@@ -619,11 +619,11 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["uint_marshal_raw.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
+  {{- $vn := .VarName }}
   {{- $ct := $pt.Type}}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- $ns := NumSize $pt.Type}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- if .Unsafe }}
     *(*{{$ct}})(unsafe.Pointer(&buf[i])) = {{$vn}}
     i += {{div $ns 8}}
@@ -655,7 +655,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["uint_size.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
+  {{- $vn := .VarName }}
   {{- if $pt.Valid }}
 		tmp := {{print "(" $pt.Stars .VarName ")"}}
 		{{- $vn = "tmp"}}
@@ -676,8 +676,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["uint_unmarshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
     return i, errs.ErrSmallBuf
@@ -704,8 +704,8 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 	templates["uint_unmarshal_raw.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- $ns := NumSize $pt.Type}}
   if len(buf) < {{div $ns 8}} {

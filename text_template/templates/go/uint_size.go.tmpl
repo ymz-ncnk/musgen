@@ -1,7 +1,7 @@
 {{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
+  {{- $vn := .VarName }}
   {{- if $pt.Valid }}
 		tmp := {{print "(" $pt.Stars .VarName ")"}}
 		{{- $vn = "tmp"}}

@@ -1,8 +1,8 @@
 {{- /* SimpleTypeVar */ -}}
 {
   {{- $pt := (ParsePtrType .Type)}}
-  {{- $vn := .VarName}}
-  {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
+  {{- $vn := .VarName }}
+  {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- if eq .Encoding "raw" }}
     {{ include "uint_size_raw.go.tmpl" (SetUpVarName (MakeSimpleType  $pt.Type .Unsafe .Suffix) $vn) }}
