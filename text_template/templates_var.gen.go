@@ -68,11 +68,6 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
       break
     }
   }
-  {{- if ne .Validator "" }}
-    if err == nil {
-      {{- include "validator.go.tmpl" . -}}
-    }
-  {{- end }}
 }`
 	templates["bool_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
@@ -103,11 +98,9 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   if buf[i] == 0x01 {
     {{$vn}} = true
     i++
-    {{- include "validator.go.tmpl" . -}}
   } else if buf[i] == 0x00 {
     {{$vn}} = false
     i++
-    {{- include "validator.go.tmpl" . -}}
   } else {
     err = errs.ErrWrongByte
   }
@@ -137,7 +130,6 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   }
   {{$vn}} = {{$ct}}(buf[i])
   i++
-  {{- include "validator.go.tmpl" . -}}
 }`
 	templates["custom_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
@@ -166,7 +158,6 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   if err == nil {
     {{$vn}} = sv
     i += si
-    {{- include "validator.go.tmpl" . -}}
   }
 }`
 	templates["float_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
@@ -234,7 +225,6 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
     {{- end }}
   {{- end }}
   {{$vn}} = {{$ct}}(math.Float{{(NumSize .Type)}}frombits(uv))
-  {{- include "validator.go.tmpl" . -}}
 }`
 	templates["initptrvar.go.tmpl"] = `{{- /* {Name, Type, Init} */ -}}
 {{- $pt := (ParsePtrType .Type) }}
@@ -293,7 +283,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- $vn := .VarName }}
   {{- if $pt.Valid }}{{$vn = print "(" $pt.Stars .VarName ")"}}{{ end }}
   {{- $ct := $pt.Type}}{{if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
-  {{- if eq .Encoding "raw" -}}
+  {{- if eq .Encoding "raw" }}
     {{ include "uint_unmarshal_raw.go.tmpl" (SetUpVarName (MakeSimpleTypeWithAlias .Alias $pt.Type .Unsafe .Suffix) $vn) }}
   {{- else }}
     {{- $uvt := print "uint" (NumSize .Type) }}
@@ -306,7 +296,6 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
 		}
     {{$vn}} = {{$ct}}(uv)
   {{- end }}
-  {{- include "validator.go.tmpl" . -}}
 }`
 	templates["map_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
@@ -376,41 +365,77 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
       }
       ({{$vn}})[{{$kevn}}] = {{$vlvn}}
     }
-    {{- if ne .Validator "" }}
-      if err == nil {
-        {{- include "validator.go.tmpl" . -}}
-      }
-    {{- end }}
   {{- if ne .MaxLength 0 }}
     }
   {{- end }}
 }`
+	templates["ptr_end.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
+}`
+	templates["ptr_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
+{{- $vn := .VarName -}}
+if {{$vn}} == nil {
+	buf[i] = 0
+	i++
+} else {
+	buf[i] = 1
+	i++`
+	templates["ptr_size.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
+{{- $vn := .VarName -}}
+size++
+if {{$vn}} != nil {`
+	templates["ptr_unmarshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
+{{- $vn := .VarName -}}
+if buf[i] == 0 {
+	i++
+	{{$vn}} = nil
+} else if buf[i] != 1 {
+	i++
+	return i, errs.ErrWrongByte
+} else {
+	i++`
 	templates["simpletypes.go.tmpl"] = `{{- /* {SimpleTypeVar, MUName} */ -}}
 {{- $pt := (ParsePtrType .SimpleTypeVar.Type)}}
-{{- if eq $pt.Type "uint64" "uint32" "uint16" "uint" }}
-  {{- if eq .SimpleTypeVar.Encoding "raw" }}
-    {{- include (print "uint_" .MUName "_raw.go.tmpl") .SimpleTypeVar }}
+{{- if $pt.Valid }}
+  {{- if eq .MUName "marshal" }}
+    {{- include "ptr_marshal.go.tmpl" . }}
+  {{ else if and (eq .MUName "unmarshal") (eq .SimpleTypeVar.Alias "") }}
+    {{- include "ptr_unmarshal.go.tmpl" . }}
+  {{ else if eq .MUName "size" }}
+    {{- include "ptr_size.go.tmpl" . }}
+  {{ end }}
+{{- end }}
+  {{- if eq $pt.Type "uint64" "uint32" "uint16" "uint" }}
+    {{- if eq .SimpleTypeVar.Encoding "raw" }}
+      {{- include (print "uint_" .MUName "_raw.go.tmpl") .SimpleTypeVar }}
+    {{- else }}
+      {{- include (print "uint_" .MUName ".go.tmpl") .SimpleTypeVar }}
+    {{- end }}
+  {{- else if eq $pt.Type "int64" "int32" "int16" "int" }}
+    {{- include (print "int_" .MUName ".go.tmpl") .SimpleTypeVar }}
+  {{- else if eq $pt.Type "float64" "float32" }}
+    {{- include (print "float_" .MUName ".go.tmpl") .SimpleTypeVar }}
+  {{- else if eq $pt.Type "string" }}
+    {{- include (print "string_" .MUName ".go.tmpl") .SimpleTypeVar }}
+  {{- else if eq $pt.Type "bool" }}
+    {{- include (print "bool_" .MUName ".go.tmpl") .SimpleTypeVar }}
+  {{- else if eq $pt.Type "byte" "uint8" "int8" }}
+    {{- include (print "byte_" .MUName ".go.tmpl") .SimpleTypeVar }}
+  {{- else if (ParseMapType .SimpleTypeVar.Type).Valid }}
+    {{- include (print "map_" .MUName ".go.tmpl") .SimpleTypeVar }}
+  {{- else if (ParseArrayType .SimpleTypeVar.Type).Valid }}
+    {{- include (print "array_" .MUName ".go.tmpl") .SimpleTypeVar }}
+  {{- else if (ParseSliceType .SimpleTypeVar.Type).Valid }}
+    {{- include (print "slice_" .MUName ".go.tmpl") .SimpleTypeVar }}
   {{- else }}
-    {{- include (print "uint_" .MUName ".go.tmpl") .SimpleTypeVar }}
+    {{- include (print "custom_" .MUName ".go.tmpl") .SimpleTypeVar }}
   {{- end }}
-{{- else if eq $pt.Type "int64" "int32" "int16" "int" }}
-  {{- include (print "int_" .MUName ".go.tmpl") .SimpleTypeVar }}
-{{- else if eq $pt.Type "float64" "float32" }}
-  {{- include (print "float_" .MUName ".go.tmpl") .SimpleTypeVar }}
-{{- else if eq $pt.Type "string" }}
-  {{- include (print "string_" .MUName ".go.tmpl") .SimpleTypeVar }}
-{{- else if eq $pt.Type "bool" }}
-  {{- include (print "bool_" .MUName ".go.tmpl") .SimpleTypeVar }}
-{{- else if eq $pt.Type "byte" "uint8" "int8" }}
-  {{- include (print "byte_" .MUName ".go.tmpl") .SimpleTypeVar }}
-{{- else if (ParseMapType .SimpleTypeVar.Type).Valid -}}
-  {{- include (print "map_" .MUName ".go.tmpl") .SimpleTypeVar }}
-{{- else if (ParseArrayType .SimpleTypeVar.Type).Valid -}}
-  {{- include (print "array_" .MUName ".go.tmpl") .SimpleTypeVar }}
-{{- else if (ParseSliceType .SimpleTypeVar.Type).Valid -}}
-  {{- include (print "slice_" .MUName ".go.tmpl") .SimpleTypeVar }}
-{{- else }}
-  {{- include (print "custom_" .MUName ".go.tmpl") .SimpleTypeVar }}
+{{- if $pt.Valid }}
+  {{- if or (eq .MUName "marshal") (and (eq .MUName "unmarshal") (eq .SimpleTypeVar.Alias "")) (eq .MUName "size") }}
+    {{- include "ptr_end.go.tmpl" . }}
+  {{- end }}
+{{- end }}
+{{- if eq .MUName "unmarshal" }}
+  {{- include "validator.go.tmpl" . }}
 {{- end }}`
 	templates["slice_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
 {
@@ -465,11 +490,6 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
         break
       }
     }
-    {{- if ne .Validator "" }}
-      if err == nil {
-        {{- include "validator.go.tmpl" . -}}
-      }
-    {{- end }}
   {{- if ne .MaxLength 0 }}
     }
   {{- end }}
@@ -531,7 +551,6 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
       {{$vn}} = {{$ct}}(buf[i : i+length])
     {{- end}}
     i += length
-    {{- include "validator.go.tmpl" . -}}
   {{- if ne .MaxLength 0 }}
     }
   {{- end }}
@@ -673,7 +692,6 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
       {{$vn}} = {{$vn}} | {{$ct}}(b)<<shift
       done = true
       i += l+1
-      {{- include "validator.go.tmpl" . }}        
       break
     }
     {{$vn}} = {{$vn}} | {{$ct}}(b&0x7F)<<shift
@@ -720,9 +738,10 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
       i++
     {{- end }}
   {{- end }}
-  {{- include "validator.go.tmpl" . }}
 }`
 	templates["validator.go.tmpl"] = `{{- if ne .Validator "" }}
-  err = {{.Validator}}({{.VarName}})
+  if err == nil {
+    err = {{.Validator}}({{.VarName}})
+  }
 {{- end }}`
 }

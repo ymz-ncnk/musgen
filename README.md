@@ -46,8 +46,8 @@ Marshal/Unmarshal process.
 - Strings, lists, arrays are encoded with length (int type) and values, maps -
   with length and key/value pairs.
 - Booleans and bytes are encoded by a single byte.
-- Pointers are value-encoded.
-- Nil pointers are not supported. Encoding will crash if meets a nil pointer.
+- Pointers are encoded with nil flag: nil pointer is encoded as 0, not nil 
+  pointer as 1 + pointer value.
 
 ## Samples
 | Type            |     Value           |     MUS Format (hex)                  |     In Parts          |

@@ -1,0 +1,10 @@
+{{- /* SimpleTypeVar */ -}}
+{{- $vn := .VarName -}}
+if buf[i] == 0 {
+	i++
+	{{$vn}} = nil
+} else if buf[i] != 1 {
+	i++
+	return i, errs.ErrWrongByte
+} else {
+	i++

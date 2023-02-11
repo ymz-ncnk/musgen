@@ -34,7 +34,6 @@
       {{$vn}} = {{$ct}}(buf[i : i+length])
     {{- end}}
     i += length
-    {{- include "validator.go.tmpl" . -}}
   {{- if ne .MaxLength 0 }}
     }
   {{- end }}

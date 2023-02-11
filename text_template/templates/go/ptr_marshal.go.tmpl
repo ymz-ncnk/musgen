@@ -1,0 +1,8 @@
+{{- /* SimpleTypeVar */ -}}
+{{- $vn := .VarName -}}
+if {{$vn}} == nil {
+	buf[i] = 0
+	i++
+} else {
+	buf[i] = 1
+	i++

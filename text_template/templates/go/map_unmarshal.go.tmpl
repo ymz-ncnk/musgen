@@ -40,11 +40,6 @@
       }
       ({{$vn}})[{{$kevn}}] = {{$vlvn}}
     }
-    {{- if ne .Validator "" }}
-      if err == nil {
-        {{- include "validator.go.tmpl" . -}}
-      }
-    {{- end }}
   {{- if ne .MaxLength 0 }}
     }
   {{- end }}

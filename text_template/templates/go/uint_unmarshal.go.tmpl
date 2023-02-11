@@ -17,7 +17,6 @@
       {{$vn}} = {{$vn}} | {{$ct}}(b)<<shift
       done = true
       i += l+1
-      {{- include "validator.go.tmpl" . }}        
       break
     }
     {{$vn}} = {{$vn}} | {{$ct}}(b&0x7F)<<shift

@@ -16,9 +16,4 @@
       break
     }
   }
-  {{- if ne .Validator "" }}
-    if err == nil {
-      {{- include "validator.go.tmpl" . -}}
-    }
-  {{- end }}
 }
