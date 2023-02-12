@@ -32,7 +32,7 @@ Also, the type description has:
 Go
 
 # Backward compatibility
-Starting from version 2.0 MusGen generates code incompatible with previous 
+Starting from version 2.0.0 MusGen generates code incompatible with previous
 versions. Reason: nil pointer support. From now pointers are encoded with an 
 additional byte: 0 - for nil pointer, 1 - for not nil pointer.
 
