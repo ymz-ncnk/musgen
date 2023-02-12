@@ -19,21 +19,21 @@
     {{- $vlvn := MapValueVarName .VarName }}
     for ; length > 0; length-- {
       {{- if (ParsePtrType $mpt.Key).Valid }}
-        {{- include "initptrvar.go.tmpl" (MakeVar $kevn $mpt.Key true) }}
+        {{- include "init_ptr_var.go.tmpl" (MakeVar $kevn $mpt.Key true) }}
       {{- else }}
         var {{$kevn}} {{ClearMapType $mpt.Key}}
       {{- end }}
       {{- if (ParsePtrType $mpt.Value).Valid }}
-        {{- include "initptrvar.go.tmpl" (MakeVar $vlvn $mpt.Value true) }}
+        {{- include "init_ptr_var.go.tmpl" (MakeVar $vlvn $mpt.Value true) }}
       {{- else }}
         var {{$vlvn}} {{ClearMapType $mpt.Value}}
       {{- end }}
-      {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Key .KeyValidator 0 .Unsafe .Suffix .KeyEncoding) $kevn) "unmarshal") }}
+      {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Key .KeyValidator 0 .Unsafe .Suffix .KeyEncoding) $kevn) "unmarshal") }}
       if err != nil {
         err = errs.NewMapKeyError({{$kevn}}, err)
         break
       }
-      {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Value .ElemValidator 0 .Unsafe .Suffix .ElemEncoding) $vlvn) "unmarshal") }}
+      {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Value .ElemValidator 0 .Unsafe .Suffix .ElemEncoding) $vlvn) "unmarshal") }}
       if err != nil {
         err = errs.NewMapValueError({{$kevn}}, {{$vlvn}}, err)
         break

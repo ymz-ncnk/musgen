@@ -47,7 +47,7 @@ func (gen MusGen) Generate(td musgen.TypeDesc, lang musgen.Lang) (
 	}
 }
 
-func (gen MusGen) generate(td musgen.TypeDesc, tmplFile string) ([]byte, 
+func (gen MusGen) generate(td musgen.TypeDesc, tmplFile string) ([]byte,
 	error) {
 	buf := bytes.NewBuffer(make([]byte, 0))
 	err := gen.baseTmpl.ExecuteTemplate(buf, tmplFile, td)

@@ -7,7 +7,7 @@
   {{ include "int_size.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   {{- $mt := (ParseMapType $pt.Type) }}
   for ke, vl := range {{$vn}} {
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $mt.Key .Unsafe .Suffix .KeyEncoding) "ke") "size") }}
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $mt.Value .Unsafe .Suffix .ElemEncoding) "vl") "size") }}
+    {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $mt.Key .Unsafe .Suffix .KeyEncoding) "ke") "size") }}
+    {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $mt.Value .Unsafe .Suffix .ElemEncoding) "vl") "size") }}
   }
 }

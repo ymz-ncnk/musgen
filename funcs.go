@@ -19,7 +19,7 @@ const (
 	MaxVarintLength8  = 1
 )
 
-// SimpleTypeVar pipeline for the simpletypes.go.tmpl.
+// SimpleTypeVar pipeline for the simple_types.go.tmpl.
 type SimpleTypeVar struct {
 	SimpleType
 	VarName string
@@ -47,7 +47,7 @@ func Alias(td TypeDesc) bool {
 }
 
 // MakeTmplData is a template function. Creates a pipeline for the
-// simpletypes.go.tmpl.
+// simple_types.go.tmpl.
 func MakeTmplData(simpleTypeVar SimpleTypeVar, muName string) struct {
 	SimpleTypeVar
 	MUName string
@@ -324,7 +324,7 @@ func MapValueVarName(vn string) string {
 	return mapUnitVarName(vn, "vl")
 }
 
-// MakeVar returns a pipeline for the initptrvar.go.tmpl.
+// MakeVar returns a pipeline for the init_ptr_var.go.tmpl.
 func MakeVar(name string, t string, init bool) struct {
 	Name string
 	Type string

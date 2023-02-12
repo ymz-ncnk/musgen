@@ -7,6 +7,6 @@
   {{ include "int_size.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   for _, el := range {{$vn}} {
     {{- $st := ParseSliceType $pt.Type }}
-    {{ include "simpletypes.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $st.Type .Unsafe .Suffix .ElemEncoding) "el") "size") }}
+    {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeWithEncoding $st.Type .Unsafe .Suffix .ElemEncoding) "el") "size") }}
   }
 }
