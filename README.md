@@ -31,10 +31,18 @@ Also, the type description has:
 # Supported languages
 Go
 
+# Backward compatibility
+Starting from version 2.0 MusGen generates code incompatible with previous 
+versions. Reason: nil pointer support. From now pointers are encoded with an 
+additional byte: 0 - for nil pointer, 1 - for not nil pointer.
+
 # MUS format
 MUS is an acronym for "Marshal, Unmarshal, Size". The emphasis here is made on 
 the presence of the Size function, which has become an important part of the 
 Marshal/Unmarshal process.
+MUS format tries hard not to add extra bytes to your data. If you feel the need 
+for some metadata, you can always add it directly to the type, like in the
+[Versioning](#versioning) section.
 
 ## Features
 - Fields are encoded/decoded by order, so there are no fields' names, only 
@@ -57,7 +65,8 @@ Marshal/Unmarshal process.
 | Person {<br>  Name string<br>  Age int<br>} | {<br>  Name: "Bill",<br>  Age: 35,<br>} | 0842696c6c46 | <sub>08 - length of the Name field,<br>42696c6c - value of the Name field,<br>46 - value of the Age field.</sub> |
 
 ## Versioning
-There is no explicit versioning support. But you can always do next:
+MUS format does not have explicit versioning support. But you can always do 
+next:
 ```
 // Add version field.
 TypeV1 {        
