@@ -6,15 +6,15 @@ MusGen generates 3 methods for a type description and language:
 - Marshal(buf) - encodes data into the MUS format. It will crash if the buffer
   length < Size().
 - Unmarshal(buf) - decodes data from the MUS format + performs validation. May 
-  return an error if format or data is not valid.
+  return an error if a format or data is not valid.
 - Size() - returns the size of the data in the MUS format.
 
 The type description consists of fields descriptions, each of which may contain:
 - Skip flag
-- Validator - name of the function, that validates the field.
+- Validator - a name of the function, that validates the field.
 - Encoding - of the field.
-- MaxLength - positive number. Restricts length of the string, list, array, or
-  map field. Those data types are encoded with a length and value.
+- MaxLength - a positive number. Restricts the length of the string, list, 
+  array, or map field. Those data types are encoded with the length and value.
   There is no need for further decoding if the length of the field is bigger
   than MaxLength, validation error will be returned.
 - ElemValidator - name of the function, that validates elements of the list, 
