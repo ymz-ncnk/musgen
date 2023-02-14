@@ -6,7 +6,7 @@ import (
 	"regexp"
 	tmplmod "text/template"
 
-	"github.com/ymz-ncnk/musgen"
+	"github.com/ymz-ncnk/musgen/v2"
 )
 
 // Two main templates are templates/alias.go.tmpl and templates/struct.go.tmpl.
