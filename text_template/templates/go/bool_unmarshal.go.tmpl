@@ -4,7 +4,7 @@
   {{- $vn := .VarName }}
   {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   if i > len(buf) - 1 {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
   if buf[i] == 0x01 {
     {{$vn}} = true
@@ -13,6 +13,6 @@
     {{$vn}} = false
     i++
   } else {
-    err = errs.ErrWrongByte
+    err = muserrs.ErrWrongByte
   }
 }

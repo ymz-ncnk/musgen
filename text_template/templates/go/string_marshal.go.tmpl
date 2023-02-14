@@ -6,7 +6,7 @@
   length := len({{$vn}})
   {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if len(buf[i:]) < length {
-    panic(errs.ErrSmallBuf)
+    panic(muserrs.ErrSmallBuf)
   }
   i += copy(buf[i:], {{$vn}})
 }

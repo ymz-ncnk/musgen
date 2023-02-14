@@ -5,6 +5,6 @@ if buf[i] == 0 {
 	{{$vn}} = nil
 } else if buf[i] != 1 {
 	i++
-	return i, errs.ErrWrongByte
+	return i, muserrs.ErrWrongByte
 } else {
 	i++

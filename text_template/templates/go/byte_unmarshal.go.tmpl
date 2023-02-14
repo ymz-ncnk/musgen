@@ -6,7 +6,7 @@
   {{- $ct := $pt.Type}}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
   {{$vn}} = {{$ct}}(buf[i])
   i++

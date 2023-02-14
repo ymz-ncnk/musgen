@@ -6,7 +6,7 @@
   {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- $ns := NumSize $pt.Type}}
   if len(buf) < {{div $ns 8}} {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
   {{- if .Unsafe }}
     {{$vn}} = *(*{{$ct}})(unsafe.Pointer(&buf[i]))

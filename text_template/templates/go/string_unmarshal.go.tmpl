@@ -8,14 +8,14 @@
   var length int
   {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
-    return i, errs.ErrNegativeLength
+    return i, muserrs.ErrNegativeLength
   } 
   if len(buf) < i+length {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
   {{- if ne .MaxLength 0 }}
     if length > {{.MaxLength}} {
-      err = errs.ErrMaxLengthExceeded
+      err = muserrs.ErrMaxLengthExceeded
     } else {
   {{- end }}
     {{- if .Unsafe }}

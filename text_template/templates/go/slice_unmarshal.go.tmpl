@@ -8,11 +8,11 @@
   var length int
   {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
-    return i, errs.ErrNegativeLength
+    return i, muserrs.ErrNegativeLength
   }
   {{- if ne .MaxLength 0 }}
     if length > {{.MaxLength}} {
-      err = errs.ErrMaxLengthExceeded
+      err = muserrs.ErrMaxLengthExceeded
     } else {
   {{- end }}
     {{$vn}} = make({{ClearMapType $pt.Type}}, length)
@@ -23,7 +23,7 @@
       {{- end }}
       {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $st .ElemValidator 0 .Unsafe .Suffix .ElemEncoding) (print $vn "[" $index "]")) "unmarshal") }}
       if err != nil {
-        err = errs.NewSliceError({{$index}}, err)
+        err = muserrs.NewSliceError({{$index}}, err)
         break
       }
     }

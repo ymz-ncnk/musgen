@@ -64,7 +64,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
     {{- end }}
     {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $at.Type .ElemValidator 0 .Unsafe .Suffix .ElemEncoding) $elvn) "unmarshal") }}
     if err != nil {
-      err = errs.NewArrayError({{$index}}, err)
+      err = muserrs.NewArrayError({{$index}}, err)
       break
     }
   }
@@ -93,7 +93,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- $vn := .VarName }}
   {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   if i > len(buf) - 1 {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
   if buf[i] == 0x01 {
     {{$vn}} = true
@@ -102,7 +102,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
     {{$vn}} = false
     i++
   } else {
-    err = errs.ErrWrongByte
+    err = muserrs.ErrWrongByte
   }
 }`
 	templates["byte_marshal.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
@@ -126,7 +126,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- $ct := $pt.Type}}
   {{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
   {{$vn}} = {{$ct}}(buf[i])
   i++
@@ -331,11 +331,11 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   var length int
   {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
-    return i, errs.ErrNegativeLength
+    return i, muserrs.ErrNegativeLength
   }
   {{- if ne .MaxLength 0 }}
     if length > {{.MaxLength}} {
-      err = errs.ErrMaxLengthExceeded
+      err = muserrs.ErrMaxLengthExceeded
     } else {
   {{- end }}
     {{$vn}} = make({{ClearMapType $pt.Type}})
@@ -355,12 +355,12 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
       {{- end }}
       {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Key .KeyValidator 0 .Unsafe .Suffix .KeyEncoding) $kevn) "unmarshal") }}
       if err != nil {
-        err = errs.NewMapKeyError({{$kevn}}, err)
+        err = muserrs.NewMapKeyError({{$kevn}}, err)
         break
       }
       {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Value .ElemValidator 0 .Unsafe .Suffix .ElemEncoding) $vlvn) "unmarshal") }}
       if err != nil {
-        err = errs.NewMapValueError({{$kevn}}, {{$vlvn}}, err)
+        err = muserrs.NewMapValueError({{$kevn}}, {{$vlvn}}, err)
         break
       }
       ({{$vn}})[{{$kevn}}] = {{$vlvn}}
@@ -390,7 +390,7 @@ if buf[i] == 0 {
 	{{$vn}} = nil
 } else if buf[i] != 1 {
 	i++
-	return i, errs.ErrWrongByte
+	return i, muserrs.ErrWrongByte
 } else {
 	i++`
 	templates["simple_types.go.tmpl"] = `{{- /* {SimpleTypeVar, MUName} */ -}}
@@ -471,11 +471,11 @@ if buf[i] == 0 {
   var length int
   {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
-    return i, errs.ErrNegativeLength
+    return i, muserrs.ErrNegativeLength
   }
   {{- if ne .MaxLength 0 }}
     if length > {{.MaxLength}} {
-      err = errs.ErrMaxLengthExceeded
+      err = muserrs.ErrMaxLengthExceeded
     } else {
   {{- end }}
     {{$vn}} = make({{ClearMapType $pt.Type}}, length)
@@ -486,7 +486,7 @@ if buf[i] == 0 {
       {{- end }}
       {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $st .ElemValidator 0 .Unsafe .Suffix .ElemEncoding) (print $vn "[" $index "]")) "unmarshal") }}
       if err != nil {
-        err = errs.NewSliceError({{$index}}, err)
+        err = muserrs.NewSliceError({{$index}}, err)
         break
       }
     }
@@ -502,7 +502,7 @@ if buf[i] == 0 {
   length := len({{$vn}})
   {{ include "int_marshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if len(buf[i:]) < length {
-    panic(errs.ErrSmallBuf)
+    panic(muserrs.ErrSmallBuf)
   }
   i += copy(buf[i:], {{$vn}})
 }`
@@ -525,14 +525,14 @@ if buf[i] == 0 {
   var length int
   {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
-    return i, errs.ErrNegativeLength
+    return i, muserrs.ErrNegativeLength
   } 
   if len(buf) < i+length {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
   {{- if ne .MaxLength 0 }}
     if length > {{.MaxLength}} {
-      err = errs.ErrMaxLengthExceeded
+      err = muserrs.ErrMaxLengthExceeded
     } else {
   {{- end }}
     {{- if .Unsafe }}
@@ -584,7 +584,7 @@ func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
     {{- end }}
     {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe $suffix) $fvn) "unmarshal") }}
     if err != nil {
-      return i, errs.NewFieldError({{print "\"" $field.Name "\""}}, err)
+      return i, muserrs.NewFieldError({{print "\"" $field.Name "\""}}, err)
     }
   {{- end }}
   return i, err
@@ -680,13 +680,13 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- if $pt.Valid }}{{ $vn = print "(" $pt.Stars .VarName ")" }}{{ end }}
   {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   if i > len(buf) - 1 {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
   shift := 0
   done := false
   for l, b := range buf[i:] {
     if l == {{minus .MaxLength 1}} && b > {{MaxLastByte $pt.Type}} {
-      return i, errs.ErrOverflow
+      return i, muserrs.ErrOverflow
     }
     if b < 0x80 {
       {{$vn}} = {{$vn}} | {{$ct}}(b)<<shift
@@ -698,7 +698,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
     shift += 7
   }
   if !done {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
 }`
 	templates["uint_unmarshal_raw.go.tmpl"] = `{{- /* SimpleTypeVar */ -}}
@@ -709,7 +709,7 @@ func (v {{.Name}}) Size{{.Suffix}}() int {
   {{- $ct := $pt.Type}}{{- if ne .Alias "" }}{{$ct = .Alias}}{{ end }}
   {{- $ns := NumSize $pt.Type}}
   if len(buf) < {{div $ns 8}} {
-    return i, errs.ErrSmallBuf
+    return i, muserrs.ErrSmallBuf
   }
   {{- if .Unsafe }}
     {{$vn}} = *(*{{$ct}})(unsafe.Pointer(&buf[i]))

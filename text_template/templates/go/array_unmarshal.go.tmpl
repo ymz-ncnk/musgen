@@ -12,7 +12,7 @@
     {{- end }}
     {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $at.Type .ElemValidator 0 .Unsafe .Suffix .ElemEncoding) $elvn) "unmarshal") }}
     if err != nil {
-      err = errs.NewArrayError({{$index}}, err)
+      err = muserrs.NewArrayError({{$index}}, err)
       break
     }
   }

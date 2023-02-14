@@ -27,7 +27,7 @@ func (v *{{.Name}}) Unmarshal{{.Suffix}}(buf []byte) (int, error) {
     {{- end }}
     {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeSimpleTypeFromField $field $unsafe $suffix) $fvn) "unmarshal") }}
     if err != nil {
-      return i, errs.NewFieldError({{print "\"" $field.Name "\""}}, err)
+      return i, muserrs.NewFieldError({{print "\"" $field.Name "\""}}, err)
     }
   {{- end }}
   return i, err

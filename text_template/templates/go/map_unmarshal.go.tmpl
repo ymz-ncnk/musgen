@@ -6,11 +6,11 @@
   var length int
   {{ include "int_unmarshal.go.tmpl" (SetUpVarName (MakeSimpleType "int" .Unsafe .Suffix) "length") }}
   if length < 0 {
-    return i, errs.ErrNegativeLength
+    return i, muserrs.ErrNegativeLength
   }
   {{- if ne .MaxLength 0 }}
     if length > {{.MaxLength}} {
-      err = errs.ErrMaxLengthExceeded
+      err = muserrs.ErrMaxLengthExceeded
     } else {
   {{- end }}
     {{$vn}} = make({{ClearMapType $pt.Type}})
@@ -30,12 +30,12 @@
       {{- end }}
       {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Key .KeyValidator 0 .Unsafe .Suffix .KeyEncoding) $kevn) "unmarshal") }}
       if err != nil {
-        err = errs.NewMapKeyError({{$kevn}}, err)
+        err = muserrs.NewMapKeyError({{$kevn}}, err)
         break
       }
       {{ include "simple_types.go.tmpl" (MakeTmplData (SetUpVarName (MakeValidSimpleType $mpt.Value .ElemValidator 0 .Unsafe .Suffix .ElemEncoding) $vlvn) "unmarshal") }}
       if err != nil {
-        err = errs.NewMapValueError({{$kevn}}, {{$vlvn}}, err)
+        err = muserrs.NewMapValueError({{$kevn}}, {{$vlvn}}, err)
         break
       }
       ({{$vn}})[{{$kevn}}] = {{$vlvn}}
