@@ -1,2 +1,4 @@
-github.com/ymz-ncnk/amock v0.1.0 h1:OkH/ydxNf6ioO9r/YwohyBY+VBUwZ/cEleYUBhyhHQU=
-github.com/ymz-ncnk/amock v0.1.0/go.mod h1:JG4igTCkNaGDgTdnao/+pV6c3M1h0QVLdkQDHgE5Uhg=
+github.com/ymz-ncnk/dvargen v0.1.1-0.20230222115722-c224d2709788 h1:uB0DOsGRRPyPpLuHDLBlSu0S9B29LgXElp4eOcQ9TY8=
+github.com/ymz-ncnk/dvargen v0.1.1-0.20230222115722-c224d2709788/go.mod h1:5ni+i8h3VuSOl0yL8QYJAxWemRGsm8w9w+cc8xYMf2Y=
+github.com/ymz-ncnk/persistor v0.1.1-0.20230222113930-d90a8f7d1cf6 h1:VmTxkMEWmaC4Hx+z8l+0QF7zY1CeS2jsH8o/WsQHy50=
+github.com/ymz-ncnk/persistor v0.1.1-0.20230222113930-d90a8f7d1cf6/go.mod h1:++l5ZDX0OCxw5j/1+tOo8I4VcZzx573RonCAbSXIv9Q=

@@ -1,4 +1,4 @@
-//go:generate go run metagen/templates_var.go
+//go:generate go run gen/dvar.go
 package text_template
 
 import (
@@ -29,7 +29,7 @@ type MusGen struct {
 	baseTmpl *tmplmod.Template
 }
 
-// Generate generates code for the specified language.
+// Generate generates code from the type description for the specified language.
 func (gen MusGen) Generate(td musgen.TypeDesc, lang musgen.Lang) (
 	[]byte, error) {
 	err := gen.validateTypeDesc(td)
