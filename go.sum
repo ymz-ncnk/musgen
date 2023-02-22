@@ -1,4 +1,4 @@
-github.com/ymz-ncnk/dvargen v0.1.1-0.20230222115722-c224d2709788 h1:uB0DOsGRRPyPpLuHDLBlSu0S9B29LgXElp4eOcQ9TY8=
-github.com/ymz-ncnk/dvargen v0.1.1-0.20230222115722-c224d2709788/go.mod h1:5ni+i8h3VuSOl0yL8QYJAxWemRGsm8w9w+cc8xYMf2Y=
-github.com/ymz-ncnk/persistor v0.1.1-0.20230222113930-d90a8f7d1cf6 h1:VmTxkMEWmaC4Hx+z8l+0QF7zY1CeS2jsH8o/WsQHy50=
-github.com/ymz-ncnk/persistor v0.1.1-0.20230222113930-d90a8f7d1cf6/go.mod h1:++l5ZDX0OCxw5j/1+tOo8I4VcZzx573RonCAbSXIv9Q=
+github.com/ymz-ncnk/dvargen v0.1.1 h1:pId8tttNng/JDdSIx0M+R2iVQFiyE53X85efGRfM+zw=
+github.com/ymz-ncnk/dvargen v0.1.1/go.mod h1:3B6Go+pnZqUocWyaUcrth7eEH7AI6CcFszFMPBcweQw=
+github.com/ymz-ncnk/persistor v0.1.1 h1:SFhkwZScgettf4zHlInLYZHJ8JmaAfK2wgV1wAMfa+A=
+github.com/ymz-ncnk/persistor v0.1.1/go.mod h1:++l5ZDX0OCxw5j/1+tOo8I4VcZzx573RonCAbSXIv9Q=
