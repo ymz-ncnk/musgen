@@ -1,4 +1,4 @@
-# MusGen
+# [Deprecated] MusGen
 MusGen is a code generator for the binary MUS format with validation support.
 
 # Overview
